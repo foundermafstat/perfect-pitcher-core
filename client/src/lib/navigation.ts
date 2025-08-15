@@ -47,6 +47,10 @@ export function getNavigationItems(locale: string = 'en'): MainNavItem[] {
       title: t.navigation.products,
       href: "/products",
     },
+    {
+      title: t.navigation.tokenSwap,
+      href: "/token-swap",
+    },
   ]
 }
 

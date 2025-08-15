@@ -118,6 +118,7 @@ export const zh = {
         allStories: "所有故事",
         projects: "项目",
         products: "产品",
+        tokenSwap: "代币交换",
         signin: "登录",
         footer: {
             product: "产品",
@@ -205,6 +206,20 @@ export const zh = {
         }
     },
     sidebar: {
-        navigation: "导航"
+        navigation: "导航",
+        recentStories: "最近的故事",
+        search: "搜索"
+    },
+    agent: {
+        storyContext: "演示上下文",
+        storyContextError: "加载故事时出错",
+        loading: "加载中...",
+        selectStory: "选择故事作为上下文",
+        noContext: "无上下文",
+        noStoriesAvailable: "没有可用的故事",
+        loadingStories: "正在加载故事...",
+        selected: "已选择",
+        slides: "张幻灯片",
+        togglePanel: "切换AI面板"
     }
 }

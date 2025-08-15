@@ -118,6 +118,7 @@ export const fr = {
         allStories: "Toutes les Histoires",
         projects: "Projets",
         products: "Produits",
+        tokenSwap: "Échange de Tokens",
         signin: "Se Connecter",
         footer: {
             product: "Produit",
@@ -205,6 +206,20 @@ export const fr = {
         }
     },
     sidebar: {
-        navigation: "Navigation"
+        navigation: "Navigation",
+        recentStories: "Histoires Récentes",
+        search: "Rechercher"
+    },
+    agent: {
+        storyContext: "Contexte de Présentation",
+        storyContextError: "Erreur lors du chargement des histoires",
+        loading: "Chargement...",
+        selectStory: "Sélectionner une histoire pour le contexte",
+        noContext: "Sans contexte",
+        noStoriesAvailable: "Aucune histoire disponible",
+        loadingStories: "Chargement des histoires...",
+        selected: "Sélectionné",
+        slides: "diapositives",
+        togglePanel: "Basculer le panneau IA"
     }
 }

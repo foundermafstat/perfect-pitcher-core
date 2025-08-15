@@ -273,6 +273,7 @@ export const en = {
         allStories: "All Stories",
         projects: "Projects",
         products: "Products",
+        tokenSwap: "Token Swap",
         signin: "Sign In",
         footer: {
             product: "Product",
@@ -360,6 +361,20 @@ export const en = {
         }
     },
     sidebar: {
-        navigation: "Navigation"
+        navigation: "Navigation",
+        recentStories: "Recent Stories",
+        search: "Search"
+    },
+    agent: {
+        storyContext: "Presentation Context",
+        storyContextError: "Error loading stories",
+        loading: "Loading...",
+        selectStory: "Select story for context",
+        noContext: "No context",
+        noStoriesAvailable: "No stories available",
+        loadingStories: "Loading stories...",
+        selected: "Selected",
+        slides: "slides",
+        togglePanel: "Toggle AI panel"
     }
 }

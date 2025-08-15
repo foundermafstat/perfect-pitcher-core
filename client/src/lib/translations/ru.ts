@@ -281,6 +281,7 @@ export const ru = {
         allStories: "Все истории",
         projects: "Проекты",
         products: "Продукты",
+        tokenSwap: "Обмен токенов",
         signin: "Войти",
         recentStories: "Последние истории",
         footer: {
@@ -369,6 +370,20 @@ export const ru = {
         }
     },
     sidebar: {
-        navigation: "Навигация"
+        navigation: "Навигация",
+        recentStories: "Последние истории",
+        search: "Поиск"
+    },
+    agent: {
+        storyContext: "Контекст презентации",
+        storyContextError: "Ошибка загрузки историй",
+        loading: "Загрузка...",
+        selectStory: "Выберите историю для контекста",
+        noContext: "Без контекста",
+        noStoriesAvailable: "Нет доступных историй",
+        loadingStories: "Загрузка историй...",
+        selected: "Выбрано",
+        slides: "слайдов",
+        togglePanel: "Переключить панель ИИ"
     }
 }

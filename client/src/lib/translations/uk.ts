@@ -119,6 +119,7 @@ export const uk = {
         allStories: "Всі історії",
         projects: "Проекти",
         products: "Продукти",
+        tokenSwap: "Обмін токенів",
         signin: "Увійти",
         footer: {
             product: "Продукт",
@@ -206,6 +207,20 @@ export const uk = {
         }
     },
     sidebar: {
-        navigation: "Навігація"
+        navigation: "Навігація",
+        recentStories: "Останні історії",
+        search: "Пошук"
+    },
+    agent: {
+        storyContext: "Контекст презентації",
+        storyContextError: "Помилка завантаження історій",
+        loading: "Завантаження...",
+        selectStory: "Виберіть історію для контексту",
+        noContext: "Без контексту",
+        noStoriesAvailable: "Немає доступних історій",
+        loadingStories: "Завантаження історій...",
+        selected: "Вибрано",
+        slides: "слайдів",
+        togglePanel: "Перемкнути панель ШІ"
     }
 }

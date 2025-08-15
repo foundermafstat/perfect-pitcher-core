@@ -33,6 +33,7 @@ import { NavUser } from "@/registry/new-york-v4/blocks/sidebar-07/components/nav
 import { TeamSwitcher } from "@/registry/new-york-v4/blocks/sidebar-07/components/team-switcher"
 import type { SidebarGroupItem, IconName } from "@/config/sidebar"
 import { Search } from "lucide-react"
+import { WalletBalance } from "@/components/wallet-balance"
 
 type Props = React.ComponentProps<typeof Sidebar> & {
   navMain: SidebarGroupItem[]
@@ -68,9 +69,9 @@ export function AppSidebarClient({ navMain, user, recentStories = [], ...props }
           <SidebarGroupContent>
             <form className="relative">
               <Label htmlFor="search" className="sr-only">
-                Search
+                {t('sidebar.search')}
               </Label>
-              <SidebarInput id="search" placeholder="Search the docs..." className="pl-8" />
+              <SidebarInput id="search" placeholder={t('sidebar.search')} className="pl-8" />
               <Search className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none" />
             </form>
           </SidebarGroupContent>
@@ -109,7 +110,7 @@ export function AppSidebarClient({ navMain, user, recentStories = [], ...props }
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-          <SidebarGroupLabel>Последние истории</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('sidebar.recentStories')}</SidebarGroupLabel>
           <SidebarMenu>
             {recentStories.map((story) => (
               <SidebarMenuItem key={story.id}>
@@ -123,6 +124,9 @@ export function AppSidebarClient({ navMain, user, recentStories = [], ...props }
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarGroup className="mt-auto group-data-[collapsible=icon]:hidden">
+        <WalletBalance />
+      </SidebarGroup>
       <SidebarFooter>
         <NavUser user={{
           name: user.name || "",

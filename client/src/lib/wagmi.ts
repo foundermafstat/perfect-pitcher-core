@@ -8,11 +8,11 @@ export const coreTestnet2: Chain = {
   name: "Core Testnet 2",
   nativeCurrency: { name: "tCORE", symbol: "tCORE", decimals: 18 },
   rpcUrls: {
-    default: { http: ["https://rpc.test.btcs.network"] },
-    public: { http: ["https://rpc.test.btcs.network"] },
+    default: { http: ["https://rpc.test2.btcs.network"] },
+    public: { http: ["https://rpc.test2.btcs.network"] },
   },
   blockExplorers: {
-    default: { name: "Core Testnet Scan", url: "https://scan.test.btcs.network" },
+    default: { name: "Core Testnet Scan", url: "https://scan.test2.btcs.network" },
   },
   testnet: true,
 }
@@ -22,7 +22,7 @@ export const wagmiConfig = getDefaultConfig({
   projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID || process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "demo",
   chains: [coreTestnet2, base, polygon, arbitrum, mainnet],
   transports: {
-    [coreTestnet2.id]: http("https://rpc.test.btcs.network"),
+    [coreTestnet2.id]: http("https://rpc.test2.btcs.network"),
     [base.id]: http(),
     [polygon.id]: http(),
     [arbitrum.id]: http(),
