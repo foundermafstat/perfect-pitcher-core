@@ -1,0 +1,289 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id                       String    @id @default(cuid())
+  name                     String?
+  surname                  String?
+  username                 String?   @unique
+  email                    String?   @unique
+  emailVerified            DateTime? @map("email_verified")
+  emailVerificationToken   String?   @unique @map("email_verification_token")
+  passwordHash             String?   @map("password_hash")
+  resetPasswordToken       String?   @unique @map("reset_password_token")
+  resetPasswordTokenExpiry DateTime? @map("reset_password_token_expiery")
+  image                    String?
+  createdAt                DateTime  @default(now()) @map("created_at")
+  role                     Role      @default(USER)
+  walletAddress            String?   @unique
+  tokenBalance             Int       @default(0)
+  fiatBalance              Float     @default(0)
+  payments                 Payment[]
+  accounts                 Account[]
+  sessions                 Session[]
+  tokenTransactions        TokenTransaction[]
+  agentSessions            AgentSession[]
+  fiatTransactions         FiatTransaction[]
+  projects                 Project[]
+  stories                  Story[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("newsletter_subscribers")
+}
+
+model Story {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  thumbnail   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String?  @map("user_id")
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  slides      Slide[]
+  // New metadata fields for dynamic decks
+  deckType    String?
+  locale      String?
+  brandColor  String?
+  finalDataEn Json?
+  qaLocalized Json?
+
+  @@index([userId])
+}
+
+model Slide {
+  id                String    @id @default(cuid())
+  title             String
+  background        String
+  storyId           String
+  backgroundType    String?   @default("color")
+  gradientAngle     Int?      @default(45)
+  gradientEnd       String?
+  gradientStart     String?
+  position          Int       @default(0)
+  youtubeBackground String?
+  elements          Element[]
+  story             Story     @relation(fields: [storyId], references: [id])
+}
+
+model Element {
+  id      String @id @default(cuid())
+  type    String
+  x       Int
+  y       Int
+  width   Int
+  height  Int
+  content Json
+  style   Json?
+  slideId String
+  slide   Slide  @relation(fields: [slideId], references: [id])
+}
+
+model Product {
+  id          String    @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  currency    String    @default("USD")
+  imageUrl    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  payments    Payment[]
+  tokensGranted Int?
+}
+
+model Payment {
+  id               String   @id @default(cuid())
+  amount           Float
+  currency         String   @default("USD")
+  status           String   @default("pending")
+  stripeSessionId  String?  @unique
+  stripeCustomerId String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  userId           String
+  productId        String
+  product          Product  @relation(fields: [productId], references: [id])
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Blueprint {
+  id             String  @id @default(cuid())
+  name           String
+  type           String
+  category       String
+  defaultWidth   Int
+  defaultHeight  Int
+  defaultContent Json
+  defaultStyle   Json?
+  fill           String?
+}
+
+model AgentSession {
+  id         String      @id @default(cuid())
+  startedAt  DateTime    @default(now())
+  endedAt    DateTime?
+  voice      String?
+  locale     String?
+  status     String?     @default("active")
+  meta       Json?
+  events     AgentEvent[]
+  userId     String?
+  user       User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  tokenTransactions TokenTransaction[]
+}
+
+model AgentEvent {
+  id         String      @id @default(cuid())
+  sessionId  String
+  type       String
+  role       String?
+  text       String?
+  raw        Json?
+  timestamp  DateTime    @default(now())
+  session    AgentSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([type])
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus @default(PENDING)
+  priority    Int        @default(0)
+  dueDate     DateTime?
+  userId      String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([status])
+  @@index([userId])
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  DONE
+  CANCELED
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model TokenTransaction {
+  id        String                 @id @default(cuid())
+  userId    String
+  user      User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Int
+  type      TokenTransactionType
+  reason    String?
+  meta      Json?
+  createdAt DateTime               @default(now())
+  sessionId String?
+  session   AgentSession?          @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([sessionId])
+}
+
+enum TokenTransactionType {
+  CREDIT
+  DEBIT
+}
+
+model FiatTransaction {
+  id        String          @id @default(cuid())
+  userId    String
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Float
+  currency  String          @default("USD")
+  provider  String          // e.g. "stripe"
+  status    String          @default("completed")
+  reason    String?
+  meta      Json?
+  createdAt DateTime        @default(now())
+
+  @@index([userId])
+}
+
+model Project {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name             String
+  shortDescription String
+  // Generated structured fields
+  problemStatement String
+  solutionApproach  Json
+  technicalDesign  Json
+  agentContext     String
+  // Logo fields
+  logoBase64       String?
+  logoMimeType     String?
+  logoPrompt       String?
+  // Relations
+  stories          Story[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([userId])
+  @@map("projects")
+}

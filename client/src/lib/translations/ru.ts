@@ -1,0 +1,374 @@
+export const ru = {
+    projectInfo: {
+        general: '{name} {version} - {description}. Дата выпуска: {releaseDate}.',
+        features: 'Основные функции проекта AIrine:',
+        technologies: 'Технологии, используемые в проекте AIrine:',
+        team: 'Команда разработчиков AIrine:',
+        faq: 'Часто задаваемые вопросы о AIrine:',
+        commands: 'Доступные голосовые команды в AIrine:',
+        examples: 'Примеры команд'
+    },
+    newStory: {
+        title: "Создать новую историю",
+        preview: "Предпросмотр истории",
+        generateAll: "Сгенерировать всё",
+        generateLogo: "Сгенерировать логотип",
+        regenerate: "Перегенерировать",
+        loading: "Генерация...",
+        creating: "Создание...",
+        create: "Создать историю",
+        cancel: "Отмена",
+        logoPromptPlaceholder: "Идея/стиль логотипа",
+        stepLabel: "Шаг {current} / {total}",
+        deckType: {
+            label: "Тип презентации",
+            startup: "Startup Pitch Deck",
+            sales: "Sales Deck",
+            launch: "Product Launch Deck",
+            strategy: "Internal Strategy Deck",
+            investor: "Investor Update Deck",
+            education: "Educational / Training Deck",
+            keynote: "Conference / Keynote Deck",
+        },
+        placeholders: {
+            projectName: "Название проекта",
+            oneLiner: "Одним предложением",
+            empty: "— пусто —",
+        },
+        sections: {
+            basics: { title: "1. Основная информация" },
+            problem: { title: "2. Проблема и ценность" },
+            solution: { title: "3. Решение" },
+            product: { title: "4. Продукт" },
+            more: { title: "5–9. Рынок, монетизация, прогресс, команда" },
+            visuals: { title: "10. Визуализация" },
+        },
+        fields: {
+            name: "Как называется проект?",
+            oneLiner: "Одним предложением: что делает проект?",
+            stage: "Стадия (идея, MVP, готовый продукт, масштабирование)",
+            problem: "Какую проблему решает проект?",
+            audience: "Целевая аудитория",
+            urgency: "Почему это важно сейчас?",
+            solution: "Как продукт решает проблему?",
+            differentiation: "Уникальность/отстройка",
+            technologies: "Технологии/подходы",
+            productOverview: "Как выглядит и работает (2–3 предложения)",
+            demoAssets: "Демо/прототип/скриншоты",
+            features: "Основные функции",
+            marketCoverage: "Рынок (география, сегменты)",
+            marketSize: "Размер рынка",
+            competitors: "Конкуренты",
+            monetization: "Монетизация",
+            traction: "Прогресс/результаты",
+            goals: "Цели 6–12 мес",
+            team: "Команда",
+            teamExperience: "Опыт и экспертиза",
+            funding: "Финансирование (сколько и на что)",
+            visualAssets: "Есть ли стиль/логотип/медиа",
+            visualsNeed: "Нужны ли иллюстрации/инфографика",
+            // доп. поля для типов презентаций
+            productName: "Название продукта",
+            pains: "Основные боли клиента",
+            solvePains: "Как продукт решает боли",
+            caseStudies: "Кейсы/истории успеха",
+            roi: "ROI/выгоды для клиента",
+            pricing: "Цена/предложение",
+            nextSteps: "Дальшие шаги (CTA)",
+            productVersion: "Версия продукта",
+            usp: "Уникальные торговые преимущества (USP)",
+            innovations: "Ключевые фичи/инновации",
+            differencePrev: "Чем отличается от прежних решений",
+            releaseTimeline: "Таймлайн релиза/доступность",
+            companyStatus: "Состояние компании (сводка)",
+            periodGoals: "Цели на период",
+            challenges: "Ключевые вызовы",
+            strategy: "Стратегия преодоления",
+            roadmap: "Дорожная карта/вехи",
+            kpis: "KPI и ожидаемые результаты",
+            responsibilities: "Зоны ответственности/роли",
+            resources: "Требуемые ресурсы",
+            companyStage: "Стадия компании",
+            achievements: "Достижения с прошлого апдейта",
+            keyMetrics: "Ключевые метрики",
+            productUpdates: "Обновления продукта/релизы",
+            marketChanges: "Изменения рынка",
+            teamUpdates: "Обновления по команде",
+            fundingStatus: "Финансы/статус",
+            topic: "Тема/предмет обучения",
+            knowledgeLevel: "Уровень знаний аудитории",
+            learningObjectives: "Цели обучения",
+            keyConcepts: "Ключевые концепции",
+            contentStructure: "Пошаговая структура",
+            examples: "Примеры/кейсы",
+            takeaways: "Итоги/выводы",
+            exercises: "Упражнения/интерактив",
+            talkTitle: "Название выступления",
+            speaker: "Спикер и регалии",
+            bigIdea: "Главная идея",
+            audienceExpectations: "Ожидания аудитории",
+            keyPoints: "Ключевые пункты/аргументы",
+            supportingData: "Данные/визуализации",
+            conclusionCta: "Вывод и призыв к действию",
+        },
+    },
+    broadcast: {
+        end: "Остановить трансляцию",
+        live: "В эфире",
+        start: "Начать трансляцию"
+    },
+    header: {
+        title: "О проекте",
+        about: "Этот проект демонстрирует использование OpenAI Realtime API с WebRTC в современном проекте Next 15. Здесь уже установлены компоненты shadcn/ui и реализован хук для WebRTC аудио сессии. Клонируйте проект и определите свои инструменты.",
+        banner: "OpenAI Realtime API с WebRTC",
+        bannerLink: "Узнать больше →",
+        beta: "Бета",
+        dark: "Темная",
+        github: "Star на GitHub",
+        language: "Язык",
+        light: "Светлая",
+        logo: "AIrine",
+        system: "Системная",
+        theme: "Переключить тему",
+        twitter: "Подписаться на"
+    },
+    hero: {
+        badge: "Next.js + shadcn/ui",
+        subtitle: "Демонстрация, нажмите кнопку ниже и попробуйте доступные инструменты",
+        title: "AIrine"
+    },
+    messageControls: {
+        content: "Содержание",
+        filter: "Фильтр по типу",
+        log: "Лог в консоль",
+        logs: "Логи разговора",
+        search: "Поиск сообщений...",
+        type: "Тип",
+        view: "Просмотр логов"
+    },
+    status: {
+        error: "Упс!",
+        info: "Переключение голосового ассистента...",
+        language: "Язык переключен с",
+        session: "Сессия установлена",
+        success: "Мы в эфире!",
+        toggle: "Переключение голосового ассистента..."
+    },
+    tokenUsage: {
+        input: "Входные токены",
+        output: "Выходные токены",
+        total: "Всего токенов",
+        usage: "Использование токенов"
+    },
+    tools: {
+        availableTools: {
+            title: "Доступные инструменты",
+            copyFn: {
+                description: 'Скажите "Скопировать в буфер обмена", чтобы вставить это куда-нибудь.',
+                name: "Копирование"
+            },
+            getTime: {
+                description: 'Спросите "Скажи, который час?" чтобы узнать текущее время.',
+                name: "Узнать время"
+            },
+            launchWebsite: {
+                description: '"Открой [сайт]" для запуска сайта в новой вкладке.',
+                name: "Запуск сайта"
+            },
+            partyMode: {
+                description: 'Скажите "Включи режим вечеринки" для динамичной анимации конфетти!',
+                name: "Режим вечеринки"
+            },
+            themeSwitcher: {
+                description: 'Скажите "Измени фон" или "Переключись на темный режим" или "Переключись на светлый режим".',
+                name: "Переключатель темы"
+            },
+            scrapeWebsite: {
+                name: "Парсер сайтов",
+                description: 'Скажите "Получи содержимое [URL сайта]" для извлечения контента с веб-страницы.'
+            }
+        },
+        clipboard: {
+            description: "Теперь вы можете вставить это куда-нибудь.",
+            success: "Текст скопирован в буфер обмена. Попросите пользователя вставить его куда-нибудь.",
+            toast: "Текст скопирован в буфер обмена!"
+        },
+        launchWebsite: {
+            description: "Не удалось запустить сайт",
+            success: "Сайт запущен! Сообщите пользователю, что сайт открыт.",
+            toast: "Запуск сайта "
+        },
+        partyMode: {
+            description: "Не удалось активировать режим вечеринки",
+            success: "Режим вечеринки активирован",
+            toast: "Режим вечеринки!",
+            failed: "Не удалось активировать режим вечеринки",
+        },
+        switchTheme: "Тема переключена на ",
+        themeFailed: "Не удалось переключить тему",
+        time: "Сообщите пользователю: Текущее время ",
+        scrapeWebsite: {
+            success: "Содержимое сайта успешно извлечено",
+            description: "Не удалось извлечь содержимое сайта",
+            toast: "Парсинг сайта..."
+        },
+        tasks: {
+            created: "Задача создана",
+            createFailed: "Не удалось создать задачу",
+            updated: "Задача обновлена",
+            updateFailed: "Не удалось обновить задачу",
+            deleted: "Задача удалена",
+            deleteFailed: "Не удалось удалить задачу",
+        }
+    },
+    transcriber: {
+        title: "Живая транскрипция"
+    },
+    voice: {
+        select: "Выберите голос",
+        ash: "Ash - Нежный и профессиональный",
+        ballad: "Ballad - Теплый и увлекательный",
+        coral: "Coral - Четкий и дружелюбный",
+        sage: "Sage - Авторитетный и спокойный",
+        verse: "Verse - Динамичный и выразительный"
+    },
+    language: "Русский",
+    languagePrompt: "Говорите и отвечайте только на русском языке. Крайне важно, чтобы вы поддерживали ответы на русском языке. Если пользователь говорит на других языках, вы все равно должны отвечать на русском.",
+    slides: {
+        commands: {
+            next: "Следующий",
+            previous: "Предыдущий",
+            new: "Новый слайд",
+            delete: "Удалить слайд",
+            goTo: "Перейти к слайду:",
+            title: "Управление карточкой",
+            slideCount: "Слайд {current} из {total}"
+        },
+        responses: {
+            nextSlide: "Перешел к следующему слайду",
+            prevSlide: "Перешел к предыдущему слайду",
+            goToSlide: "Перешел к слайду {number}",
+            newSlide: "Создан новый слайд",
+            deleted: "Слайд удален",
+            cannotDelete: "Невозможно удалить последний слайд",
+            invalidSlide: "Указан неверный номер слайда"
+        }
+    },
+    account: {
+        title: "Аккаунт",
+        profile: "Профиль",
+        email: "Email",
+        role: "Роль",
+        wallet: "Кошелек",
+        tokens: "Токены",
+        authAndWallet: "Авторизация и кошелек",
+        linkCurrentWallet: "Привязать текущий кошелек",
+        balanceTopUp: "Пополнение баланса",
+        onchainPurchase: "Ончейн покупка токенов",
+        onchainHint: "Отправьте транзакцию в смарт-контракт, затем вставьте hash для зачёта.",
+        txHashPlaceholder: "txHash (0x...)",
+        credit: "Зачесть",
+        fiatTopUp: "Фиатное пополнение (Stripe)",
+        fiatHint: "Фиатный баланс хранится отдельно и может быть использован в будущем для внутренних операций.",
+        openCatalog: "Открыть каталог продуктов",
+        linkEmailTitle: "Привязать email через соц. сеть",
+        linkEmailHint: "Войдите через социального провайдера, чтобы привязать email к аккаунту.",
+        viewPublicProfile: "Публичный профиль",
+    },
+    navigation: {
+        home: "Главная",
+        myStories: "Мои истории",
+        allStories: "Все истории",
+        projects: "Проекты",
+        products: "Продукты",
+        signin: "Войти",
+        recentStories: "Последние истории",
+        footer: {
+            product: "Продукт",
+            stories: "Истории",
+            editor: "Редактор",
+            support: "Поддержка",
+            account: "Аккаунт",
+            help: "Помощь",
+            company: "Компания",
+            about: "О нас",
+            contact: "Контакты"
+        }
+    },
+    editor: {
+        loading: "Загрузка...",
+        storyNotFound: "История не найдена",
+        loadingError: "Ошибка при загрузке истории",
+        newSlide: "Новый слайд",
+        addSlideError: "Ошибка при добавлении слайда",
+        slideAdded: "Слайд добавлен",
+        save: "Сохранить",
+        storySaved: "История сохранена",
+        saveError: "Ошибка при сохранении истории",
+        delete: "Удалить",
+        deleteConfirm: "Удалить историю навсегда?",
+        storyDeleted: "История удалена",
+        deleteError: "Не удалось удалить историю",
+        presentation: "Презентация",
+        slide: "Слайд",
+        saveChangesError: "Не удалось сохранить изменения",
+        reorderError: "Не удалось сохранить порядок слайдов",
+        panels: {
+            elements: "Элементы",
+            layers: "Слои",
+            slides: "Слайды",
+            background: "Фон",
+            all: "Все",
+            text: "Текст",
+            shapes: "Фигуры",
+            addSlide: "Добавить",
+            goTo: "Перейти к:",
+            currentOrder: "Порядок текущего:",
+            backgroundType: "Тип фона",
+            backgroundTypeSelect: "Выберите тип фона",
+            transparent: "Прозрачный",
+            color: "Цвет",
+            gradient: "Градиент",
+            youtube: "YouTube видео",
+            backgroundColor: "Цвет фона",
+            gradientColors: "Цвета градиента",
+            gradientAngle: "Угол (градусы)",
+            youtubeUrl: "YouTube URL",
+            youtubeUrlPlaceholder: "https://www.youtube.com/watch?v=...",
+            youtubeHint: "Видео будет автоматически воспроизводиться при отображении слайда"
+        },
+        canvas: {
+            elementsPanel: "Панель элементов",
+            elementsTitle: "Элементы",
+            layersTitle: "Слои",
+            zoomOut: "Уменьшить",
+            zoomIn: "Увеличить",
+            saveAsPng: "Сохранить как PNG",
+            exportToPdf: "Экспорт в PDF",
+            elementSettings: "Настройки элемента",
+            deleteElement: "Удалить элемент",
+            slideSavedPng: "Слайд успешно сохранен как PNG",
+            slideSaveError: "Не удалось сохранить слайд как изображение",
+            noSlidesToExport: "Нет слайдов для экспорта",
+            preparingPdf: "Подготовка PDF с {count} слайдами...",
+            processingSlide: "Обработано {current} из {total} слайдов...",
+            slideProcessError: "Не удалось обработать слайд {number}, пропускаем...",
+            pdfExported: "Презентация успешно экспортирована в PDF",
+            pdfExportError: "Не удалось экспортировать презентацию в PDF",
+            unknownError: "Неизвестная ошибка"
+        },
+        elementTypes: {
+            text: "Текст",
+            image: "Изображение", 
+            rectangle: "Прямоугольник",
+            circle: "Круг",
+            button: "Кнопка"
+        },
+        settings: {
+            addColor: "Добавить цвет"
+        }
+    },
+    sidebar: {
+        navigation: "Навигация"
+    }
+}

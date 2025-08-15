@@ -1,0 +1,33 @@
+{
+  "name": "perfect-pitcher-core",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "check:balance": "hardhat run scripts/check-balance.js --network coreTestnet",
+    "deploy:testnet": "hardhat run scripts/deploy-real-testnet.js --network coreTestnet",
+    "deploy:mainnet": "hardhat run scripts/deploy.js --network core",
+    "verify": "hardhat verify --network coreTestnet",
+    "monitor": "hardhat run scripts/monitor-contract.js --network coreTestnet",
+    "stats": "hardhat run scripts/contract-stats.js --network coreTestnet",
+    "interact": "hardhat run scripts/interact-with-contract.js --network coreTestnet"
+  },
+  "keywords": ["perfect-pitcher", "defi", "core-blockchain", "uups", "saas"],
+  "author": "Perfect Pitcher Team",
+  "license": "MIT",
+  "description": "Perfect Pitcher Token ($PRFCT) - Upgradeable токен для SaaS платформы на Core blockchain",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.1.0",
+    "@openzeppelin/contracts-upgradeable": "^5.1.0",
+    "@chainlink/contracts": "^1.2.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@openzeppelin/hardhat-upgrades": "^3.5.0",
+    "dotenv": "^17.2.1",
+    "hardhat": "^2.26.2",
+    "hardhat-gas-reporter": "^2.2.1"
+  }
+}

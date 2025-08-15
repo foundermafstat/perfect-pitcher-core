@@ -1,0 +1,26 @@
+{
+  "network": "coreTestnet",
+  "chainId": 1114,
+  "rpcUrl": "https://rpc.test2.btcs.network",
+  "deployer": "0x457c3b9703a27c4b2e44c57CAeB2E2a9D4e1ADef",
+  "deployerBalance": "0.94990382",
+  "timestamp": "2025-08-15T19:41:35.476Z",
+  "blockNumber": 7361311,
+  "tokenProxy": "0xFe442AfE3571dFc30898a2edfCF0E1d2f291cF4A",
+  "implementation": "0xDEb5813F5CceC266b4849eC9cCE9333C3cFFE52f",
+  "treasury": "0x457c3b9703a27c4b2e44c57CAeB2E2a9D4e1ADef",
+  "mockRouter": "0xB4DA770D59ca7d0c7DD812c8B90DCfd62E688121",
+  "corePriceFeed": "0xa0D180583Ccdb6106aCb9Eb41ab2dA73a7309B0A",
+  "usdtPriceFeed": "0xfbBBabAE7755C32648B698589Cd13292796a0A46",
+  "tokenName": "Perfect Pitcher Token",
+  "tokenSymbol": "PRFCT",
+  "totalSupply": "1000000000.0",
+  "explorer": "https://scan.test2.btcs.network/address/0xFe442AfE3571dFc30898a2edfCF0E1d2f291cF4A",
+  "envVariables": {
+    "TOKEN_ADDRESS": "0xFe442AfE3571dFc30898a2edfCF0E1d2f291cF4A",
+    "TREASURY_ADDRESS": "0x457c3b9703a27c4b2e44c57CAeB2E2a9D4e1ADef",
+    "MOCK_ROUTER": "0xB4DA770D59ca7d0c7DD812c8B90DCfd62E688121",
+    "CORE_PRICE_FEED": "0xa0D180583Ccdb6106aCb9Eb41ab2dA73a7309B0A",
+    "USDT_PRICE_FEED": "0xfbBBabAE7755C32648B698589Cd13292796a0A46"
+  }
+}
