@@ -1,6 +1,26 @@
-Perfect Pitcher - Client Application
+**Perfect Pitcher** - Where AI meets presentation excellence! 🎯✨
 
-A modern web application for creating presentations and managing projects with AI integration, built on cutting-edge technologies.
+# Perfect Pitcher Token ($PRFCT) - Core Blockchain
+
+> **Production-ready upgradeable smart contract for SaaS platform on Core blockchain with integrated DEX and enterprise-grade security system**
+
+## 🚀 Project Overview
+
+Perfect Pitcher Token (PRFCT) is a comprehensive solution for SaaS platforms specializing in AI-powered content generation, built on the Core blockchain. The contract leverages UUPS (Universal Upgradeable Proxy Standard) architecture and includes a built-in DEX for seamless CORE/USDT → PRFCT conversions.
+
+### ✨ Key Features & Competitive Advantages
+
+- **🔄 Future-Proof Upgradeable Architecture** - UUPS pattern ensures seamless updates without data loss or service interruption
+- **💰 Advanced SaaS Tokenomics** - Intelligent spending system for AI services with deflationary burning mechanism
+- **🔒 Smart Resource Locking** - Time-based token locking for live broadcasts with AI agents and content creation
+- **💱 Integrated DEX Solution** - Native automated swaps via IceCreamSwap eliminating external exchange dependencies  
+- **🛡️ Enterprise-Grade Security** - Multi-layered protection with role-based access, selective pausing, and reentrancy guards
+- **📊 Real-Time Analytics** - Comprehensive monitoring with event tracking and performance metrics
+- **⚡ Gas-Optimized Operations** - Batch operations, storage packing, and unchecked arithmetic for minimal transaction costs
+- **🏗️ Modular Architecture** - Clean separation of concerns enabling easy maintenance and feature additions
+- **🔗 Oracle Integration** - Chainlink price feeds for accurate valuation and slippage protection
+- **💡 AI-First Design** - Purpose-built for modern AI applications with content generation and live streaming focus
+
 
 ## 🚀 Tech Stack
 
