@@ -250,6 +250,39 @@ export const uk = {
         loadingStories: "Завантаження історій...",
         selected: "Вибрано",
         slides: "слайдів",
-        togglePanel: "Перемкнути панель ШІ"
+        togglePanel: "Перемкнути панель ШІ",
+        interface: {
+            voiceConversation: "Голосова розмова",
+            textCommands: "Текстові команди",
+            suggestions: "Пропозиції",
+            enterCommand: "Введіть команду для агента...",
+            nextSlide: "Наступний слайд",
+            prevSlide: "Попередній слайд",
+            gotoSlide: "Перейти до слайду 1",
+            newTask: "Нове завдання",
+            taskList: "Список завдань"
+        }
+    },
+    tools: {
+        availableTools: {
+            getTime: {
+                name: "Час"
+            },
+            themeSwitcher: {
+                name: "Змінити тему"
+            },
+            partyMode: {
+                name: "Вечірка"
+            },
+            copyFn: {
+                name: "Скопіювати"
+            },
+            launchWebsite: {
+                name: "Відкрити сайт"
+            },
+            scrapeWebsite: {
+                name: "Парсер"
+            }
+        }
     }
 }

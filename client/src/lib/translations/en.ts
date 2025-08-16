@@ -404,6 +404,63 @@ export const en = {
         loadingStories: "Loading stories...",
         selected: "Selected",
         slides: "slides",
-        togglePanel: "Toggle AI panel"
+        togglePanel: "Toggle AI panel",
+        interface: {
+            voiceConversation: "Voice Conversation",
+            textCommands: "Text Commands",
+            suggestions: "Suggestions",
+            enterCommand: "Enter command for agent...",
+            nextSlide: "Next Slide",
+            prevSlide: "Previous Slide",
+            gotoSlide: "Go to Slide 1",
+            newTask: "New Task",
+            taskList: "Task List",
+            sessionSettings: "Session Settings"
+        }
+    },
+    stories: {
+        title: "Stories",
+        loading: "Loading...",
+        newStory: "New Story",
+        edit: "Edit",
+        details: "Details",
+        presentation: "Presentation",
+        delete: "Delete"
+    },
+    storyDetails: {
+        created: "Created",
+        updated: "Updated",
+        type: "Type",
+        language: "Language",
+        back: "Back",
+        slides: "Slides",
+        elements: "Elements",
+        project: "Project",
+        openProject: "Open Project",
+        noProject: "Not linked to project",
+        metadata: "Metadata",
+        noSlides: "No slides"
+    },
+    tools: {
+        availableTools: {
+            getTime: {
+                name: "Time"
+            },
+            themeSwitcher: {
+                name: "Switch Theme"
+            },
+            partyMode: {
+                name: "Party"
+            },
+            copyFn: {
+                name: "Copy"
+            },
+            launchWebsite: {
+                name: "Open Website"
+            },
+            scrapeWebsite: {
+                name: "Scraper"
+            }
+        }
     }
 }

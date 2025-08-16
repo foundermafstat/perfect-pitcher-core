@@ -3,25 +3,27 @@
 import useSWR from 'swr'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { useTranslations } from '@/providers/translations-context'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export default function StoriesListPage() {
   const { data, mutate, isLoading } = useSWR('/api/stories', fetcher)
+  const { t } = useTranslations()
 
   async function handleDelete(id: string) {
     await fetch(`/api/stories/${id}`, { method: 'DELETE' })
     mutate()
   }
 
-  if (isLoading) return <div className="p-6">Loading...</div>
+  if (isLoading) return <div className="p-6">{t('stories.loading') || 'Loading...'}</div>
 
   return (
     <div className="container mx-auto max-w-5xl p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Истории</h1>
+        <h1 className="text-2xl font-bold">{t('stories.title') || 'Истории'}</h1>
         <Button asChild>
-          <Link href="/editor/new">Новая история</Link>
+          <Link href="/editor/new">{t('stories.newStory') || 'Новая история'}</Link>
         </Button>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -38,16 +40,16 @@ export default function StoriesListPage() {
             </div>
             <div className="mt-2 flex gap-2">
               <Button size="sm" variant="outline" asChild>
-                <Link href={`/editor/${s.id}`}>Редактировать</Link>
+                <Link href={`/editor/${s.id}`}>{t('stories.edit') || 'Редактировать'}</Link>
               </Button>
               <Button size="sm" asChild>
-                <Link href={`/stories/${s.id}`}>Детали</Link>
+                <Link href={`/stories/${s.id}`}>{t('stories.details') || 'Детали'}</Link>
               </Button>
               <Button size="sm" asChild>
-                <Link href={`/presentation/${s.id}`}>Презентация</Link>
+                <Link href={`/presentation/${s.id}`}>{t('stories.presentation') || 'Презентация'}</Link>
               </Button>
               <Button size="sm" variant="destructive" onClick={() => handleDelete(s.id)}>
-                Удалить
+                {t('stories.delete') || 'Удалить'}
               </Button>
             </div>
           </div>

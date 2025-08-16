@@ -249,6 +249,39 @@ export const zh = {
         loadingStories: "正在加载故事...",
         selected: "已选择",
         slides: "张幻灯片",
-        togglePanel: "切换AI面板"
+        togglePanel: "切换AI面板",
+        interface: {
+            voiceConversation: "语音对话",
+            textCommands: "文本命令",
+            suggestions: "建议",
+            enterCommand: "为代理输入命令...",
+            nextSlide: "下一张幻灯片",
+            prevSlide: "上一张幻灯片",
+            gotoSlide: "转到幻灯片1",
+            newTask: "新任务",
+            taskList: "任务列表"
+        }
+    },
+    tools: {
+        availableTools: {
+            getTime: {
+                name: "时间"
+            },
+            themeSwitcher: {
+                name: "切换主题"
+            },
+            partyMode: {
+                name: "派对"
+            },
+            copyFn: {
+                name: "复制"
+            },
+            launchWebsite: {
+                name: "打开网站"
+            },
+            scrapeWebsite: {
+                name: "抓取器"
+            }
+        }
     }
 }

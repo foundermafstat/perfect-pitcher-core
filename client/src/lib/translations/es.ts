@@ -249,6 +249,39 @@ export const es = {
     loadingStories: "Cargando historias...",
     selected: "Seleccionado",
     slides: "diapositivas",
-    togglePanel: "Alternar panel de IA"
+    togglePanel: "Alternar panel de IA",
+    interface: {
+      voiceConversation: "Conversación por Voz",
+      textCommands: "Comandos de Texto",
+      suggestions: "Sugerencias",
+      enterCommand: "Ingrese comando para el agente...",
+      nextSlide: "Siguiente Diapositiva",
+      prevSlide: "Diapositiva Anterior",
+      gotoSlide: "Ir a Diapositiva 1",
+      newTask: "Nueva Tarea",
+      taskList: "Lista de Tareas"
+    }
+  },
+  tools: {
+    availableTools: {
+      getTime: {
+        name: "Tiempo"
+      },
+      themeSwitcher: {
+        name: "Cambiar Tema"
+      },
+      partyMode: {
+        name: "Fiesta"
+      },
+      copyFn: {
+        name: "Copiar"
+      },
+      launchWebsite: {
+        name: "Abrir Sitio Web"
+      },
+      scrapeWebsite: {
+        name: "Extractor"
+      }
+    }
   }
 } 

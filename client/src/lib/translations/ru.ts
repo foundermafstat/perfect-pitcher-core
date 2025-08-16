@@ -413,6 +413,41 @@ export const ru = {
         loadingStories: "Загрузка историй...",
         selected: "Выбрано",
         slides: "слайдов",
-        togglePanel: "Переключить панель ИИ"
+        togglePanel: "Переключить панель ИИ",
+        interface: {
+            voiceConversation: "Голосовой разговор",
+            textCommands: "Текстовые команды",
+            suggestions: "Предложения",
+            enterCommand: "Введите команду для агента...",
+            nextSlide: "Следующий слайд",
+            prevSlide: "Предыдущий слайд",
+            gotoSlide: "Перейти к слайду 1",
+            newTask: "Новая задача",
+            taskList: "Список задач",
+            sessionSettings: "Настройки сессии"
+        }
+    },
+    stories: {
+        title: "Истории",
+        loading: "Загрузка...",
+        newStory: "Новая история",
+        edit: "Редактировать",
+        details: "Детали",
+        presentation: "Презентация",
+        delete: "Удалить"
+    },
+    storyDetails: {
+        created: "Создано",
+        updated: "Обновлено",
+        type: "Тип",
+        language: "Язык",
+        back: "Назад",
+        slides: "Слайды",
+        elements: "Элементов",
+        project: "Проект",
+        openProject: "Открыть проект",
+        noProject: "Не привязано к проекту",
+        metadata: "Метаданные",
+        noSlides: "Нет слайдов"
     }
 }

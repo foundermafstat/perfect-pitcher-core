@@ -52,7 +52,7 @@ export function StoryContextSelector({
   return (
     <div className="space-y-2">
       <Label htmlFor="story-context" className="text-sm font-medium flex items-center gap-2">
-        <BookOpen className="h-4 w-4" />
+        
         {t('agent.storyContext')}
       </Label>
       <Select
@@ -77,17 +77,7 @@ export function StoryContextSelector({
               {stories.length > 0 ? (
                 stories.map((story) => (
                   <SelectItem key={story.id} value={story.id}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{story.title}</span>
-                      {story.description && (
-                        <span className="text-xs text-muted-foreground">
-                          {story.description.length > 50 
-                            ? `${story.description.slice(0, 50)}...`
-                            : story.description
-                          }
-                        </span>
-                      )}
-                    </div>
+                    <span className="font-medium">{story.title}</span>
                   </SelectItem>
                 ))
               ) : (

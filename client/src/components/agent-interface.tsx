@@ -1,7 +1,8 @@
 "use client"
 
 import React, { useEffect, useMemo, useState, useCallback } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
+import { ChevronUp, ChevronDown, Settings } from "lucide-react"
 
 import useWebRTCAudioSession from "@/hooks/use-webrtc"
 import { tools } from "@/lib/tools"
@@ -23,6 +24,7 @@ import { type Story } from "@/hooks/use-stories"
 export function AgentInterface(): React.ReactElement {
   const [voice, setVoice] = useState("ash")
   const [selectedStory, setSelectedStory] = useState<Story | null>(null)
+  const [isSettingsExpanded, setIsSettingsExpanded] = useState(true)
 
   const webrtcSession = useWebRTCAudioSession(voice, tools, selectedStory)
   const {
@@ -101,9 +103,9 @@ export function AgentInterface(): React.ReactElement {
     if (currentPath.includes('/presentation/')) {
       return [
         ...baseActions,
-        { id: "next-slide", label: "Следующий слайд", run: () => toolsFunctions.nextSlide() },
-        { id: "prev-slide", label: "Предыдущий слайд", run: () => toolsFunctions.previousSlide() },
-        { id: "goto-slide", label: "Перейти к слайду 1", run: () => toolsFunctions.goToSlide({ slideNumber: 1 }) },
+        { id: "next-slide", label: t("agent.interface.nextSlide") || "Следующий слайд", run: () => toolsFunctions.nextSlide() },
+        { id: "prev-slide", label: t("agent.interface.prevSlide") || "Предыдущий слайд", run: () => toolsFunctions.previousSlide() },
+        { id: "goto-slide", label: t("agent.interface.gotoSlide") || "Перейти к слайду 1", run: () => toolsFunctions.goToSlide({ slideNumber: 1 }) },
         { id: "party", label: t("tools.availableTools.partyMode.name") || "Вечеринка", run: () => toolsFunctions.partyFunction() },
       ];
     }
@@ -113,7 +115,7 @@ export function AgentInterface(): React.ReactElement {
       return [
         ...baseActions,
         { id: "party", label: t("tools.availableTools.partyMode.name") || "Вечеринка", run: () => toolsFunctions.partyFunction() },
-        { id: "tasks-create", label: "Новая задача", run: () => toolsFunctions.createTask({ title: "Demo task" }) },
+        { id: "tasks-create", label: t("agent.interface.newTask") || "Новая задача", run: () => toolsFunctions.createTask({ title: "Demo task" }) },
       ];
     }
 
@@ -121,8 +123,8 @@ export function AgentInterface(): React.ReactElement {
     if (currentPath.includes('/projects') || currentPath.includes('/tasks')) {
       return [
         ...baseActions,
-        { id: "tasks-list", label: "Список задач", run: () => toolsFunctions.listTasks() },
-        { id: "tasks-create", label: "Новая задача", run: () => toolsFunctions.createTask({ title: "Demo task" }) },
+        { id: "tasks-list", label: t("agent.interface.taskList") || "Список задач", run: () => toolsFunctions.listTasks() },
+        { id: "tasks-create", label: t("agent.interface.newTask") || "Новая задача", run: () => toolsFunctions.createTask({ title: "Demo task" }) },
       ];
     }
 
@@ -130,10 +132,10 @@ export function AgentInterface(): React.ReactElement {
     return [
       ...baseActions,
       { id: "party", label: t("tools.availableTools.partyMode.name") || "Вечеринка", run: () => toolsFunctions.partyFunction() },
-      { id: "copy", label: t("tools.availableTools.copyFn.name") || "Скопировать", run: () => toolsFunctions.copyToClipboard({ text: "AIrine" }) },
+      { id: "copy", label: t("tools.availableTools.copyFn.name") || "Скопировать", run: () => toolsFunctions.copyToClipboard({ text: "Perfect Pitcher" }) },
       { id: "open", label: t("tools.availableTools.launchWebsite.name") || "Открыть сайт", run: () => toolsFunctions.launchWebsite({ url: "https://openai.com" }) },
       { id: "scrape", label: t("tools.availableTools.scrapeWebsite.name") || "Парсер", run: () => toolsFunctions.scrapeWebsite({ url: "https://example.com" }) },
-      { id: "tasks-list", label: "Список задач", run: () => toolsFunctions.listTasks() },
+      { id: "tasks-list", label: t("agent.interface.taskList") || "Список задач", run: () => toolsFunctions.listTasks() },
     ];
   }, [t, toolsFunctions])
 
@@ -185,28 +187,66 @@ export function AgentInterface(): React.ReactElement {
 
   return (
     <div className="flex h-full w-full flex-col gap-3 p-3 overflow-hidden">
-      <div className="bg-card text-card-foreground rounded-xl border p-3 shadow-sm flex-shrink-0">
-        <div className="flex flex-col items-start justify-start gap-3">
-          <div className="flex gap-3 w-full">
-            <div className="flex-1">
-              <VoiceSelector value={voice} onValueChange={setVoice} />
+      <div className="bg-card text-card-foreground rounded-xl border shadow-sm flex-shrink-0">
+        {/* Заголовок с кнопкой сворачивания настроек */}
+        {selectedStory && (
+          <div 
+            className="flex items-center justify-between p-3 pb-5 cursor-pointer select-none"
+            onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
+          >
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Settings className="h-4 w-4" />
+              {t("agent.interface.sessionSettings") || "Настройки сессии"}
             </div>
-            <div className="flex-1">
-              <StoryContextSelector 
-                onContextChange={handleStoryContextChange}
-                selectedStoryId={selectedStory?.id}
-                disabled={isSessionActive}
-              />
-            </div>
+            <motion.div
+              animate={{ rotate: isSettingsExpanded ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ChevronUp className="h-4 w-4" />
+            </motion.div>
           </div>
+        )}
+        
+        {/* Сворачиваемые настройки */}
+        <AnimatePresence>
+          {(!selectedStory || isSettingsExpanded) && (
+            <motion.div
+              initial={selectedStory ? { opacity: 0, height: 0 } : false}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+              <div className="p-3 space-y-3">
+                <div className="flex gap-3 w-full">
+                  <div className="flex-1">
+                    <VoiceSelector value={voice} onValueChange={setVoice} />
+                  </div>
+                  <div className="flex-1">
+                    <StoryContextSelector 
+                      onContextChange={handleStoryContextChange}
+                      selectedStoryId={selectedStory?.id}
+                      disabled={isSessionActive}
+                    />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* Кнопка трансляции всегда видна */}
+        <div className="p-3 pt-0">
           <BroadcastButton
             isSessionActive={isSessionActive}
             onClick={handleStartStopClick}
           />
         </div>
+        
+        {/* Статус и информация о токенах */}
         {status && (
           <motion.div
-            className="mt-3"
+            className="px-3 pb-3"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             transition={{ duration: 0.2 }}
@@ -220,7 +260,7 @@ export function AgentInterface(): React.ReactElement {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2, delay: 0.1 }}
-            className="mt-2 overflow-hidden"
+            className="px-3 pb-3 overflow-hidden"
           >
             <TokenUsageDisplay messages={msgs} />
           </motion.div>
@@ -233,7 +273,7 @@ export function AgentInterface(): React.ReactElement {
           {/* WebRTC разговор */}
           {conversation.length > 0 && (
             <div className="bg-card text-card-foreground rounded-xl border shadow-sm flex flex-col min-h-0">
-              <h3 className="text-sm font-medium p-3 pb-2 flex-shrink-0">Голосовой разговор</h3>
+              <h3 className="text-sm font-medium p-3 pb-2 flex-shrink-0">{t("agent.interface.voiceConversation") || "Голосовой разговор"}</h3>
               <div className="flex-1 min-h-0 overflow-hidden px-3 pb-3">
                 <Transcriber conversation={conversation} />
               </div>
@@ -243,7 +283,7 @@ export function AgentInterface(): React.ReactElement {
           {/* API чат */}
           {apiChatHistory.length > 0 && (
             <div className="bg-card text-card-foreground rounded-xl border shadow-sm flex flex-col min-h-0">
-              <h3 className="text-sm font-medium p-3 pb-0 flex-shrink-0">Текстовые команды</h3>
+              <h3 className="text-sm font-medium p-3 pb-0 flex-shrink-0">{t("agent.interface.textCommands") || "Текстовые команды"}</h3>
               <div className="flex-1 min-h-0 overflow-hidden">
                 <ApiChatDisplay messages={apiChatHistory} />
               </div>
@@ -251,10 +291,10 @@ export function AgentInterface(): React.ReactElement {
           )}
         </div>
         
-        {/* Предложения */}
-        {suggested.length > 0 && (
+        {/* Предложения - скрываются во время активной сессии */}
+        {suggested.length > 0 && !isSessionActive && (
           <div className="flex-shrink-0 bg-card text-card-foreground rounded-xl border p-3 shadow-sm">
-            <h4 className="text-xs font-medium mb-2 text-muted-foreground">Предложения</h4>
+            <h4 className="text-xs font-medium mb-2 text-muted-foreground">{t("agent.interface.suggestions") || "Предложения"}</h4>
             <div className="flex flex-wrap gap-2">
               {suggested.map((a) => (
                 <Button key={a.id} size="sm" variant="outline" onClick={() => a.run()}>
@@ -273,7 +313,7 @@ export function AgentInterface(): React.ReactElement {
           onUserMessage={handleCommandSubmit}
           conversationHistory={combinedHistory}
           toolsFunctions={toolsFunctions}
-          placeholder="Введите команду для агента..."
+          placeholder={t("agent.interface.enterCommand") || "Введите команду для агента..."}
         />
       </div>
     </div>
