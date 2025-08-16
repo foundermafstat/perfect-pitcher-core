@@ -4,6 +4,27 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import type { Story, Slide, SlideElement } from '@/lib/types'
 
+// Helper function to restore element properties from style
+function restoreElementFromDB(dbElement: any): SlideElement {
+  const style = dbElement.style || {}
+  const { fill, stroke, transform3d, ...cleanStyle } = style
+  
+  return {
+    id: dbElement.id,
+    type: dbElement.type,
+    x: dbElement.x,
+    y: dbElement.y,
+    width: dbElement.width,
+    height: dbElement.height,
+    content: dbElement.content as any,
+    style: cleanStyle,
+    // Восстанавливаем специальные свойства из style
+    ...(fill ? { fill } : {}),
+    ...(stroke ? { stroke } : {}),
+    ...(transform3d ? { transform3d } : {})
+  }
+}
+
 // Входные типы для создания сущностей без id
 type CreateSlideElementInput = Omit<SlideElement, 'id'>
 type CreateSlideInput = Omit<Slide, 'id' | 'elements'> & { elements: CreateSlideElementInput[] }
@@ -52,24 +73,14 @@ export async function getStories(): Promise<Story[]> {
       slides: story.slides.map(slide => ({
         id: slide.id,
         title: slide.title,
+        context: (slide as any).context || '',
         background: slide.background,
         backgroundType: toBackgroundType((slide as any).backgroundType),
         youtubeBackground: (slide as any).youtubeBackground || '',
         gradientStart: (slide as any).gradientStart || '',
         gradientEnd: (slide as any).gradientEnd || '',
         gradientAngle: (slide as any).gradientAngle ?? 45,
-        elements: slide.elements.map(element => ({
-          id: element.id,
-          type: element.type,
-          x: element.x,
-          y: element.y,
-          width: element.width,
-          height: element.height,
-          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-          content: element.content as any,
-          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-          style: element.style as any
-        }))
+        elements: slide.elements.map(element => restoreElementFromDB(element))
       }))
     }))
   } catch (error) {
@@ -115,22 +126,14 @@ export async function getUserStories(): Promise<Story[]> {
       slides: story.slides.map(slide => ({
         id: slide.id,
         title: slide.title,
+        context: (slide as any).context || '',
         background: slide.background,
         backgroundType: toBackgroundType((slide as any).backgroundType),
         youtubeBackground: slide.youtubeBackground || '',
         gradientStart: slide.gradientStart || '',
         gradientEnd: slide.gradientEnd || '',
         gradientAngle: slide.gradientAngle || 45,
-        elements: slide.elements.map(element => ({
-          id: element.id,
-          type: element.type,
-          x: element.x,
-          y: element.y,
-          width: element.width,
-          height: element.height,
-          content: element.content as any,
-          style: element.style as any
-        }))
+        elements: slide.elements.map(element => restoreElementFromDB(element))
       }))
     }))
   } catch (error) {
@@ -168,22 +171,14 @@ export async function getStoryById(id: string): Promise<Story | null> {
       slides: story.slides.map(slide => ({
         id: slide.id,
         title: slide.title,
+        context: (slide as any).context || '',
         background: slide.background,
         backgroundType: toBackgroundType(slide.backgroundType as any),
         youtubeBackground: slide.youtubeBackground || '',
         gradientStart: slide.gradientStart || '',
         gradientEnd: slide.gradientEnd || '',
         gradientAngle: slide.gradientAngle || 45,
-        elements: slide.elements.map(element => ({
-          id: element.id,
-          type: element.type,
-          x: element.x,
-          y: element.y,
-          width: element.width,
-          height: element.height,
-          content: element.content as any,
-          style: element.style as any
-        }))
+        elements: slide.elements.map(element => restoreElementFromDB(element))
       }))
     }
   } catch (error) {
@@ -211,6 +206,7 @@ export async function createStory(story: CreateStoryInput & { deckType?: string;
         slides: {
           create: story.slides.map(slide => ({
             title: slide.title,
+            context: slide.context || '',
             background: slide.background,
             elements: {
               create: slide.elements.map(element => ({
@@ -256,17 +252,9 @@ export async function createStory(story: CreateStoryInput & { deckType?: string;
       slides: newStory.slides.map(slide => ({
         id: slide.id,
         title: slide.title,
+        context: (slide as any).context || '',
         background: slide.background,
-        elements: slide.elements.map(element => ({
-          id: element.id,
-          type: element.type,
-          x: element.x,
-          y: element.y,
-          width: element.width,
-          height: element.height,
-          content: element.content as any,
-          style: element.style as any
-        }))
+        elements: slide.elements.map(element => restoreElementFromDB(element))
       }))
     }
   } catch (error) {
@@ -323,17 +311,9 @@ export async function updateStory(id: string, storyData: Partial<Omit<Story, 'id
       slides: updatedStory.slides.map(slide => ({
         id: slide.id,
         title: slide.title,
+        context: (slide as any).context || '',
         background: slide.background,
-        elements: slide.elements.map(element => ({
-          id: element.id,
-          type: element.type,
-          x: element.x,
-          y: element.y,
-          width: element.width,
-          height: element.height,
-          content: element.content as any,
-          style: element.style as any
-        }))
+        elements: slide.elements.map(element => restoreElementFromDB(element))
       }))
     }
   } catch (error) {
@@ -349,6 +329,7 @@ export async function createSlide(storyId: string, slide: Omit<Slide, 'id'>): Pr
     const newSlide = await prisma.slide.create({
       data: {
         title: slide.title,
+        context: slide.context || '',
         background: slide.background,
         backgroundType: toBackgroundType(slide.backgroundType as any),
         youtubeBackground: slide.youtubeBackground || '',
@@ -377,6 +358,7 @@ export async function createSlide(storyId: string, slide: Omit<Slide, 'id'>): Pr
     return {
       id: newSlide.id,
       title: newSlide.title,
+      context: (newSlide as any).context || '',
       background: newSlide.background,
       backgroundType: toBackgroundType(newSlide.backgroundType as any),
       youtubeBackground: newSlide.youtubeBackground || '',
@@ -407,6 +389,7 @@ export async function updateSlide(id: string, slideData: Partial<Omit<Slide, 'id
       where: { id },
       data: {
         title: slideData.title,
+        context: slideData.context || '',
         background: slideData.background
       },
       include: {
@@ -417,17 +400,9 @@ export async function updateSlide(id: string, slideData: Partial<Omit<Slide, 'id
     return {
       id: updatedSlide.id,
       title: updatedSlide.title,
+      context: (updatedSlide as any).context || '',
       background: updatedSlide.background,
-      elements: updatedSlide.elements.map(element => ({
-        id: element.id,
-        type: element.type,
-        x: element.x,
-        y: element.y,
-        width: element.width,
-        height: element.height,
-        content: element.content as any,
-        style: element.style as any
-      }))
+      elements: updatedSlide.elements.map(element => restoreElementFromDB(element))
     }
   } catch (error) {
     console.error('Ошибка при обновлении слайда:', error)
@@ -452,7 +427,15 @@ export async function updateSlideElements(slideId: string, elements: SlideElemen
         width: element.width,
         height: element.height,
         content: element.content,
-        style: element.style || {}
+        style: {
+          ...(element.style || {}),
+          // Сохраняем fill в style если есть
+          ...(element.fill ? { fill: element.fill } : {}),
+          // Сохраняем stroke в style если есть
+          ...(element.stroke ? { stroke: element.stroke } : {}),
+          // Сохраняем transform3d в style если есть
+          ...(element.transform3d ? { transform3d: element.transform3d } : {})
+        }
       }))
     })
 
@@ -469,17 +452,9 @@ export async function updateSlideElements(slideId: string, elements: SlideElemen
     return {
       id: updatedSlide.id,
       title: updatedSlide.title,
+      context: (updatedSlide as any).context || '',
       background: updatedSlide.background,
-      elements: updatedSlide.elements.map(element => ({
-        id: element.id,
-        type: element.type,
-        x: element.x,
-        y: element.y,
-        width: element.width,
-        height: element.height,
-        content: element.content as any,
-        style: element.style as any
-      }))
+      elements: updatedSlide.elements.map(element => restoreElementFromDB(element))
     }
   } catch (error) {
     console.error('Ошибка при обновлении элементов слайда:', error)
@@ -496,6 +471,7 @@ export async function updateFullSlide(slideId: string, slideData: Partial<Omit<S
       where: { id: slideId },
       data: {
         title: slideData.title,
+        context: slideData.context || '',
         background: slideData.background,
         backgroundType: slideData.backgroundType as any,
         youtubeBackground: slideData.youtubeBackground,
@@ -522,7 +498,15 @@ export async function updateFullSlide(slideId: string, slideData: Partial<Omit<S
           width: element.width,
           height: element.height,
           content: element.content,
-          style: element.style || {}
+          style: {
+            ...(element.style || {}),
+            // Сохраняем fill в style если есть
+            ...(element.fill ? { fill: element.fill } : {}),
+            // Сохраняем stroke в style если есть
+            ...(element.stroke ? { stroke: element.stroke } : {}),
+            // Сохраняем transform3d в style если есть
+            ...(element.transform3d ? { transform3d: element.transform3d } : {})
+          }
         }))
       })
     }
@@ -540,17 +524,9 @@ export async function updateFullSlide(slideId: string, slideData: Partial<Omit<S
     return {
       id: updatedSlide.id,
       title: updatedSlide.title,
+      context: (updatedSlide as any).context || '',
       background: updatedSlide.background,
-      elements: updatedSlide.elements.map(element => ({
-        id: element.id,
-        type: element.type,
-        x: element.x,
-        y: element.y,
-        width: element.width,
-        height: element.height,
-        content: element.content as any,
-        style: element.style as any
-      }))
+      elements: updatedSlide.elements.map(element => restoreElementFromDB(element))
     }
   } catch (error) {
     console.error('Ошибка при обновлении слайда:', error)

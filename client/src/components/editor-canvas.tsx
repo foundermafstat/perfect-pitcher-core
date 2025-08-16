@@ -438,6 +438,13 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
     onChange(updates as Slide)
   }
 
+  const handleSlideUpdate = (slideData: Partial<Slide>) => {
+    onChange({
+      ...slide,
+      ...slideData,
+    })
+  }
+
   // Helper function to extract YouTube video ID from URL
   const extractYoutubeId = (url: string): string => {
     const regExp =
@@ -555,7 +562,8 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
             onAddElement={handleAddElement} 
             onReorderElements={handleReorderElements}
             onBackgroundChange={handleBackgroundChange} 
-            onBackgroundTypeChange={handleBackgroundTypeChange} 
+            onBackgroundTypeChange={handleBackgroundTypeChange}
+            onSlideUpdate={handleSlideUpdate}
           />
         )}
 

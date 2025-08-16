@@ -211,3 +211,4 @@ const {
 **Perfect Pitcher Token Swap is now live on Core Testnet 2! 🚀**
 
 Users can seamlessly exchange tCORE for PRFCT tokens to access AI-powered services on the platform.
+

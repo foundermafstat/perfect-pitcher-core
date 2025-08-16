@@ -332,6 +332,10 @@ export const en = {
         deleteError: "Failed to delete story",
         presentation: "Presentation",
         slide: "Slide",
+        slideTitle: "Slide Title",
+        slideContext: "Slide Context",
+        slideTitlePlaceholder: "Enter slide title...",
+        slideContextPlaceholder: "Enter context for voice narration...",
         saveChangesError: "Failed to save changes",
         reorderError: "Failed to save slide order",
         panels: {

@@ -341,6 +341,10 @@ export const ru = {
         deleteError: "Не удалось удалить историю",
         presentation: "Презентация",
         slide: "Слайд",
+        slideTitle: "Название слайда",
+        slideContext: "Контекст слайда",
+        slideTitlePlaceholder: "Введите название слайда...",
+        slideContextPlaceholder: "Введите контекст для голосового озвучивания...",
         saveChangesError: "Не удалось сохранить изменения",
         reorderError: "Не удалось сохранить порядок слайдов",
         panels: {

@@ -29,7 +29,7 @@ export function Header() {
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
             <AgentSidebarToggleButton />
-            <TokenBalance tokenAddress={process.env.NEXT_PUBLIC_CORE_TESTNET2_FAUCET_TOKEN as `0x${string}`} label="tCORE" />
+            {/* <TokenBalance tokenAddress={process.env.NEXT_PUBLIC_CORE_TESTNET2_FAUCET_TOKEN as `0x${string}`} label="tCORE" /> */}
             <LanguageSwitcher />
             {/* <ThemeSelector /> */}
             

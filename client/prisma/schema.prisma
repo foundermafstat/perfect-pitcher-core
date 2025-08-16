@@ -108,6 +108,7 @@ model Story {
 model Slide {
   id                String    @id @default(cuid())
   title             String
+  context           String?   @default("")
   background        String
   storyId           String
   backgroundType    String?   @default("color")

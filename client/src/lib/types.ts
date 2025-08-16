@@ -20,6 +20,7 @@ export interface Story {
 export interface Slide {
   id: string
   title: string
+  context?: string
   elements: SlideElement[]
   background: string
   backgroundType?: "none" | "color" | "gradient" | "youtube"

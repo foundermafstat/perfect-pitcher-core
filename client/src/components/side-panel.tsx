@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Box, ChevronDown, ChevronUp, Palette, Type, Image, BarChart, Table, Square, Circle, Layout, Layers as LayersIcon } from "lucide-react"
+import { Box, ChevronDown, ChevronUp, Palette, Type, Image, BarChart, Table, Square, Circle, Layout, Layers as LayersIcon, Settings } from "lucide-react"
 
 import type { Blueprint, Slide, SlideElement } from "@/lib/types"
 import { useTranslations } from "@/providers/translations-context"
@@ -30,6 +30,7 @@ interface SidePanelProps {
   onReorderElements: (reorderedElements: SlideElement[]) => void
   onBackgroundChange: (background: string) => void
   onBackgroundTypeChange: (type: string, value?: string) => void
+  onSlideUpdate: (slideData: Partial<Slide>) => void
 }
 
 export function SidePanel({
@@ -39,12 +40,14 @@ export function SidePanel({
   onReorderElements,
   onBackgroundChange,
   onBackgroundTypeChange,
+  onSlideUpdate,
 }: SidePanelProps) {
   const { t } = useTranslations()
   const [activeTab, setActiveTab] = useState("all")
   const [isBlueprintsOpen, setIsBlueprintsOpen] = useState(true)
   const [isBackgroundOpen, setIsBackgroundOpen] = useState(true)
   const [isLayersOpen, setIsLayersOpen] = useState(true)
+  const [isSlideSettingsOpen, setIsSlideSettingsOpen] = useState(true)
   const [backgroundType, setBackgroundType] = useState(
     slide.backgroundType || "color"
   )
@@ -134,7 +137,7 @@ export function SidePanel({
                       <div className="text-primary flex-shrink-0">
                         {getIconForType(blueprint.type)}
                       </div>
-                      <span className="text-xs">
+                      <span className="text-xs truncate min-w-0 flex-1">
                         {blueprint.name}
                       </span>
                     </CardContent>
@@ -143,6 +146,45 @@ export function SidePanel({
               </div>
             </TabsContent>
           </Tabs>
+        </CollapsibleContent>
+      </Collapsible>
+
+      {/* Slide Settings Section */}
+      <Collapsible open={isSlideSettingsOpen} onOpenChange={setIsSlideSettingsOpen}>
+        <CollapsibleTrigger className="hover:bg-muted/60 flex w-full items-center justify-between border-b py-2 px-3">
+          <div className="flex items-center gap-2">
+            <Settings className="h-3.5 w-3.5" />
+            <h2 className="text-sm font-medium">{t('editor.slide')}</h2>
+          </div>
+          {isSlideSettingsOpen ? (
+            <ChevronUp className="h-3.5 w-3.5" />
+          ) : (
+            <ChevronDown className="h-3.5 w-3.5" />
+          )}
+        </CollapsibleTrigger>
+        <CollapsibleContent className="space-y-3 p-3">
+          <div>
+            <Label htmlFor="slideTitle" className="text-xs">{t('editor.slideTitle')}</Label>
+            <Input
+              id="slideTitle"
+              type="text"
+              value={slide.title || ''}
+              placeholder={t('editor.slideTitlePlaceholder')}
+              onChange={(e) => onSlideUpdate({ title: e.target.value })}
+              className="h-8 text-xs"
+            />
+          </div>
+          <div>
+            <Label htmlFor="slideContext" className="text-xs">{t('editor.slideContext')}</Label>
+            <Input
+              id="slideContext"
+              type="text"
+              value={slide.context || ''}
+              placeholder={t('editor.slideContextPlaceholder')}
+              onChange={(e) => onSlideUpdate({ context: e.target.value })}
+              className="h-8 text-xs"
+            />
+          </div>
         </CollapsibleContent>
       </Collapsible>
 

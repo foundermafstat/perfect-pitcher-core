@@ -21,7 +21,7 @@ export function renderElement(element: SlideElement, isPreview: boolean = false)
     case "text":
       return (
         <div
-          className="h-full w-full overflow-hidden"
+          className="h-full w-full overflow-hidden p-2"
           style={{
             ...element.style,
             ...animationStyles,
@@ -30,11 +30,15 @@ export function renderElement(element: SlideElement, isPreview: boolean = false)
             color: element.style.color || "#000000",
             textAlign: (element.style.textAlign as any) || "left",
             fontFamily: element.style.fontFamily || "inherit",
-            lineHeight: isPreview ? '1.2' : 'normal',
+            lineHeight: isPreview ? '1.2' : '1.4',
             display: 'flex',
-            alignItems: 'center',
+            alignItems: element.style.verticalAlign === 'top' ? 'flex-start' :
+                       element.style.verticalAlign === 'bottom' ? 'flex-end' : 'center',
             justifyContent: element.style.textAlign === 'center' ? 'center' : 
                          element.style.textAlign === 'right' ? 'flex-end' : 'flex-start',
+            wordWrap: 'break-word',
+            wordBreak: 'break-word',
+            hyphens: 'auto',
             ...(element.transform3d ? {
               transform: `${
                 `perspective(${element.transform3d.perspective ?? 0}px)`
@@ -42,7 +46,15 @@ export function renderElement(element: SlideElement, isPreview: boolean = false)
             } : {}),
           }}
         >
-          {element.content.text || "Text element"}
+          <span style={{ 
+            maxWidth: '100%', 
+            width: '100%',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: element.style.whiteSpace || 'normal'
+          }}>
+            {element.content.text || "Text element"}
+          </span>
         </div>
       )
 
@@ -51,8 +63,11 @@ export function renderElement(element: SlideElement, isPreview: boolean = false)
         <img
           src={element.content.src || "/placeholder.svg"}
           alt={element.content.alt || ""}
-          className="h-full w-full object-contain"
-          style={animationStyles}
+          className="h-full w-full"
+          style={{
+            ...animationStyles,
+            objectFit: element.style.objectFit || "contain",
+          }}
         />
       ) : (
         <div
@@ -112,6 +127,7 @@ function renderShape(
 
   if (element.fill) {
     const anyFill: any = element.fill as any
+    
     // Сбрасываем, чтобы не мешать шортхенд/нон-шортхенд
     ;(shapeStyles as any).background = undefined
     ;(shapeStyles as any).backgroundImage = undefined
@@ -125,7 +141,8 @@ function renderShape(
       shapeStyles.backgroundPosition = 'center'
       shapeStyles.backgroundRepeat = 'no-repeat'
     } else {
-      shapeStyles.backgroundImage = getGradientCSS(anyFill as GradientFill)
+      const gradientCSS = getGradientCSS(anyFill as GradientFill)
+      shapeStyles.backgroundImage = gradientCSS
       shapeStyles.backgroundRepeat = 'no-repeat'
     }
   } else {
@@ -150,14 +167,25 @@ function getGradientCSS(gradient: GradientFill): string {
     return "none"
   }
 
+  // Убеждаемся, что у нас есть цвета и stops
+  if (!gradient.colors || !gradient.stops || gradient.colors.length === 0) {
+    return "none"
+  }
+
   if (gradient.type === "linear") {
     const angle = gradient.angle || 0
     return `linear-gradient(${angle}deg, ${gradient.colors
-      .map((color, index) => `${color} ${gradient.stops[index] * 100}%`)
+      .map((color, index) => {
+        const stop = gradient.stops[index] || (index / (gradient.colors.length - 1))
+        return `${color} ${Math.round(stop * 100)}%`
+      })
       .join(", ")})`
   } else if (gradient.type === "radial") {
     return `radial-gradient(circle, ${gradient.colors
-      .map((color, index) => `${color} ${gradient.stops[index] * 100}%`)
+      .map((color, index) => {
+        const stop = gradient.stops[index] || (index / (gradient.colors.length - 1))
+        return `${color} ${Math.round(stop * 100)}%`
+      })
       .join(", ")})`
   }
 
