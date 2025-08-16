@@ -237,15 +237,10 @@ export async function createStory(story: CreateStoryInput & { deckType?: string;
       description: newStory.description,
       thumbnail: newStory.thumbnail,
       userId: newStory.userId || undefined,
-      // @ts-expect-error extend runtime shape
       deckType: (newStory as any).deckType ?? undefined,
-      // @ts-expect-error extend runtime shape
       locale: (newStory as any).locale ?? undefined,
-      // @ts-expect-error extend runtime shape
       brandColor: (newStory as any).brandColor ?? undefined,
-      // @ts-expect-error extend runtime shape
       finalDataEn: (newStory as any).finalDataEn ?? undefined,
-      // @ts-expect-error extend runtime shape
       qaLocalized: (newStory as any).qaLocalized ?? undefined,
       createdAt: newStory.createdAt.toISOString(),
       updatedAt: newStory.updatedAt.toISOString(),
@@ -271,15 +266,10 @@ export async function updateStory(id: string, storyData: Partial<Omit<Story, 'id
         title: storyData.title,
         description: storyData.description,
         thumbnail: storyData.thumbnail,
-        // @ts-expect-error extend
         deckType: (storyData as any).deckType,
-        // @ts-expect-error extend
         locale: (storyData as any).locale,
-        // @ts-expect-error extend
         brandColor: (storyData as any).brandColor,
-        // @ts-expect-error extend
         finalDataEn: (storyData as any).finalDataEn,
-        // @ts-expect-error extend
         qaLocalized: (storyData as any).qaLocalized,
       },
       include: {
@@ -296,15 +286,10 @@ export async function updateStory(id: string, storyData: Partial<Omit<Story, 'id
       title: updatedStory.title,
       description: updatedStory.description,
       thumbnail: updatedStory.thumbnail,
-      // @ts-expect-error extend
       deckType: (updatedStory as any).deckType,
-      // @ts-expect-error extend
       locale: (updatedStory as any).locale,
-      // @ts-expect-error extend
       brandColor: (updatedStory as any).brandColor,
-      // @ts-expect-error extend
       finalDataEn: (updatedStory as any).finalDataEn,
-      // @ts-expect-error extend
       qaLocalized: (updatedStory as any).qaLocalized,
       createdAt: updatedStory.createdAt.toISOString(),
       updatedAt: updatedStory.updatedAt.toISOString(),

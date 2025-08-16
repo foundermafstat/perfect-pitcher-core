@@ -21,7 +21,6 @@ export function StoryCard({ story }: StoryCardProps) {
             className="h-full w-full relative"
             style={{
               backgroundColor: firstSlide.background,
-              overflow: 'hidden'
             }}
           >
             {firstSlide.elements.map((element) => (
@@ -33,9 +32,9 @@ export function StoryCard({ story }: StoryCardProps) {
                   top: `${(element.y / 720) * 100}%`,
                   width: `${(element.width / 1280) * 100}%`,
                   height: `${(element.height / 720) * 100}%`,
-                  fontSize: `calc(${(element.width / 1280) * 100}% * 0.15)`, // Относительный размер шрифта
-                  transform: 'scale(1)', // Для лучшего масштабирования
-                  transformOrigin: 'top left'
+                  fontSize: `calc(${(element.width / 1280) * 100}% * 0.12)`,
+                  transform: 'scale(1)', // Возвращаю нормальный масштаб
+                  transformOrigin: 'center' // Возвращаю стандартное позиционирование
                 }}
               >
                 {renderElement(element, true)}
