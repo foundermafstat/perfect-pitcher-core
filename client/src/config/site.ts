@@ -1,7 +1,7 @@
 export const siteConfig = {
-  name: "AIrine",
+  name: "Perfect Pitcher",
   url: "https://localhost:3000",
-  description: "AI Hackathon project",
+  description: "We are building the worlds first AI-powered Real-Time Presentation Agent — a groundbreaking technology that transforms how founders, innovators, and teams present their ideas.",
   author: "foundermafstat",
   links: {
     twitter: "https://x.com/iampublion",

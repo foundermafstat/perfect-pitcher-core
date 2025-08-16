@@ -1,5 +1,13 @@
 import type { Session } from "next-auth"
 import { getRecentStories } from "@/lib/navigation"
+import { ru } from "@/lib/translations/ru"
+import { en } from "@/lib/translations/en"
+import { es } from "@/lib/translations/es"
+import { fr } from "@/lib/translations/fr"
+import { zh } from "@/lib/translations/zh"
+import { uk } from "@/lib/translations/uk"
+
+const translations = { ru, en, es, fr, zh, uk }
 
 export type IconName =
   | "home"
@@ -26,84 +34,103 @@ export interface SidebarGroupItem {
   items?: SidebarLinkItem[]
 }
 
-export async function buildSidebarNav(session?: Session | null): Promise<SidebarGroupItem[]> {
+export async function buildSidebarNav(session?: Session | null, locale: string = 'en'): Promise<SidebarGroupItem[]> {
   const isAdmin = (session?.user as any)?.role === "ADMIN"
   
-  // Получаем последние истории
-  const recentStories = await getRecentStories()
+  // Безопасное получение переводов с fallback
+  const validLocale = ['en', 'ru', 'es', 'fr', 'zh', 'uk'].includes(locale) ? locale : 'en'
+  const t = translations[validLocale as keyof typeof translations] || translations.en
+  
+  // Проверяем, что переводы меню существуют
+  if (!t || !t.menu) {
+    console.error(`Menu translations not found for locale: ${validLocale}`)
+    
+    // Используем переводы en как fallback
+    const fallbackT = translations.en
+    if (!fallbackT || !fallbackT.menu) {
+      throw new Error('Critical error: English translations not found')
+    }
+    
+    // Возвращаем результат с fallback переводами
+    return buildSidebarItems(fallbackT, isAdmin, await getRecentStories(), session)
+  }
+  
+  return buildSidebarItems(t, isAdmin, await getRecentStories(), session)
+}
 
+function buildSidebarItems(t: any, isAdmin: boolean, recentStories: any[], session?: Session | null): SidebarGroupItem[] {
   return [
     {
-      title: "Главная",
+      title: t.menu.home,
       url: "/",
       icon: "home",
       items: [
-        { title: "Мои истории", url: "/" },
-        { title: "Все истории", url: "/stories" },
+        { title: t.menu.myStories, url: "/" },
+        { title: t.menu.allStories, url: "/stories" },
       ],
     },
     {
-      title: "Редактор",
+      title: t.menu.editor,
       icon: "fileText",
       items: [
-        { title: "Новая история", url: "/editor/new" },
+        { title: t.menu.newStory, url: "/editor/new" },
         // Динамическая: список историй рендерится на главной
       ],
     },
     {
-      title: "Презентации",
+      title: t.menu.presentations,
       icon: "panelsTopLeft",
       items: [
         // Навигация к конкретной презентации производится из редактора/списка
-        { title: "UI Демо", url: "/ui" },
+        { title: t.menu.uiDemo, url: "/ui" },
       ],
     },
     {
-      title: "Проекты",
+      title: t.menu.projects,
       icon: "fileText",
       items: [
-        { title: "Мои проекты", url: "/projects" },
-        { title: "Новый проект", url: "/projects/new" },
+        { title: t.menu.myProjects, url: "/projects" },
+        { title: t.menu.newProject, url: "/projects/new" },
       ],
     },
     {
-      title: "Агент",
+      title: t.menu.agent,
       icon: "bot",
       items: [
-        { title: "Интерфейс агента", url: "/agent" },
-        { title: "Логи сессий", url: "/agent-logs" },
+        { title: t.menu.agentInterface, url: "/agent" },
+        { title: t.menu.sessionLogs, url: "/agent-logs" },
       ],
     },
     {
-      title: "Продукты",
+      title: t.menu.products,
       icon: "shoppingBag",
       items: [
-        { title: "Каталог", url: "/products" },
+        { title: t.menu.catalog, url: "/products" },
       ],
     },
     {
-      title: "Платежи",
+      title: t.menu.payments,
       icon: "creditCard",
       items: [
-        { title: "История платежей", url: "/account/payments" },
+        { title: t.menu.paymentHistory, url: "/account/payments" },
       ],
     },
     {
-      title: "Аккаунт",
+      title: t.menu.account,
       icon: "userRound",
       items: [
-        { title: "Профиль", url: "/account" },
+        { title: t.menu.profile, url: "/account" },
       ],
     },
     // Для неавторизованных показываем ссылки на вход/регистрацию
     ...(!session?.user
       ? [
           {
-            title: "Аутентификация",
+            title: t.menu.authentication,
             icon: "shieldCheck",
             items: [
-              { title: "Войти", url: "/signin" },
-              { title: "Регистрация", url: "/signup" },
+              { title: t.menu.signin, url: "/signin" },
+              { title: t.menu.signup, url: "/signup" },
             ],
           } as SidebarGroupItem,
         ]
@@ -111,13 +138,13 @@ export async function buildSidebarNav(session?: Session | null): Promise<Sidebar
     ...(isAdmin
       ? [
           {
-            title: "Админ",
+            title: t.menu.admin,
             icon: "layoutDashboard",
             items: [
-              { title: "Товары", url: "/admin/products" },
-              { title: "Дэшборд (пример)", url: "/dashboard" },
-              { title: "Покупатели (пример)", url: "/dashboard/customers" },
-              { title: "Настройки (пример)", url: "/dashboard/settings" },
+              { title: t.menu.goods, url: "/admin/products" },
+              { title: t.menu.dashboard, url: "/dashboard" },
+              { title: t.menu.customers, url: "/dashboard/customers" },
+              { title: t.menu.settings, url: "/dashboard/settings" },
             ],
           } as SidebarGroupItem,
         ]

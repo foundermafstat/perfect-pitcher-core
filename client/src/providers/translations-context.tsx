@@ -1,6 +1,7 @@
 "use client"
 
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
 import { translations, getTranslation } from '@/lib/translations/index'
 import { getAIrineData, formatString } from '@/lib/airine-data'
 
@@ -21,12 +22,32 @@ const TranslationsContext = createContext<TranslationsContextType | null>(null)
 
 export function TranslationsProvider({ children }: { children: ReactNode }) {
   const [locale, setLocale] = useState('en')
-  const [airineData, setAirineData] = useState(getAIrineData(locale));
+  const [airineData, setAirineData] = useState(getAIrineData('en'));
+  const router = useRouter()
+  
+  // Инициализируем локаль из cookies при загрузке
+  useEffect(() => {
+    const savedLocale = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('locale='))
+      ?.split('=')[1] || 'en';
+    
+    if (savedLocale !== locale) {
+      setLocale(savedLocale);
+      setAirineData(getAIrineData(savedLocale));
+    }
+  }, []);
   
   // Обновляем airineData при изменении локали
   const handleLocaleChange = (newLocale: string) => {
     setLocale(newLocale);
     setAirineData(getAIrineData(newLocale));
+    
+    // Сохраняем локаль в cookies
+    document.cookie = `locale=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+    
+    // Перезагружаем серверные компоненты (включая боковое меню)
+    router.refresh();
   }
 
   const t = (key: string, variables?: Record<string, string | number>): string => {
