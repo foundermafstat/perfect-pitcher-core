@@ -30,6 +30,7 @@ interface UseWebRTCAudioSessionReturn {
   currentVolume: number
   conversation: Conversation[]
   sendTextMessage: (text: string) => void
+  sendSlideContextUpdate: (slideContext: string) => void
 }
 
 /**
@@ -899,6 +900,43 @@ export default function useWebRTCAudioSession(
     dataChannelRef.current.send(JSON.stringify(response))
   }
 
+  /**
+   * Send a slide context update to the agent.
+   */
+  function sendSlideContextUpdate(slideContext: string) {
+    const dc = dataChannelRef.current
+    if (!dc || dc.readyState !== "open" || !slideContext) {
+      return
+    }
+
+    const contextMessage = {
+      type: "conversation.item.create",
+      item: {
+        type: "message",
+        role: "user",
+        content: [
+          {
+            type: "input_text",
+            text: `SYSTEM_INSTRUCTION: The user has navigated to a new slide. Use the following context for your narration or answers until the next update.\n\nCURRENT_SLIDE_CONTEXT: ${slideContext}`,
+          },
+        ],
+      },
+    }
+
+    dc.send(JSON.stringify(contextMessage))
+
+    // Optional: log this event
+    if (sessionIdRef.current) {
+      logEventToDB({
+        sessionId: sessionIdRef.current,
+        type: "slide_context_update",
+        role: "system",
+        text: `Slide context updated: ${slideContext.slice(0, 200)}`,
+        raw: { context: slideContext },
+      })
+    }
+  }
+
 
 
   // Cleanup on unmount
@@ -925,5 +963,6 @@ export default function useWebRTCAudioSession(
     currentVolume,
     conversation,
     sendTextMessage,
+    sendSlideContextUpdate,
   }
 }

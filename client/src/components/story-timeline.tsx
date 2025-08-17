@@ -68,19 +68,20 @@ function SortableSlide({ slide, index, isActive, onSelect }: SortableSlideProps)
   }
 
   return (
-    <button
-      ref={setNodeRef as any}
-      {...attributes}
-      {...listeners}
-      className={`h-16 w-24 cursor-pointer overflow-hidden rounded-md border bg-background transition-shadow hover:shadow-sm ${isActive ? "ring-primary ring-2" : ""} touch-manipulation`}
-      onClick={onSelect}
-      type="button"
-    >
-      <div className="h-full w-full" style={style} />
-      <div className="flex items-center justify-center gap-1 py-0.5">
+    <div className="h-16 flex flex-col gap-0.5">
+      <button
+        ref={setNodeRef as any}
+        {...attributes}
+        {...listeners}
+        className={`aspect-video h-full w-auto cursor-pointer overflow-hidden rounded-md border bg-background transition-shadow hover:shadow-sm ${isActive ? "ring-primary ring-2" : ""} touch-manipulation`}
+        onClick={onSelect}
+        type="button"
+        style={style}
+      />
+      <div className="flex items-center justify-center">
         <span className="text-muted-foreground text-[10px] leading-none">#{index + 1}</span>
       </div>
-    </button>
+    </div>
   )
 }
 

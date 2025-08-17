@@ -14,6 +14,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SlideViewer } from "@/components/slide-viewer"
+import { updateSlide } from "@/actions/slide"
 
 interface Story {
   id: string
@@ -32,6 +34,11 @@ interface Story {
     elements: Array<any>
     background?: string
     backgroundType?: string
+    context?: string
+    gradientStart?: string
+    gradientEnd?: string
+    gradientAngle?: number
+    youtubeBackground?: string
   }>
   project?: {
     id: string
@@ -79,6 +86,8 @@ export default function EditStoryPage() {
   const [qaLocalizedFields, setQaLocalizedFields] = useState<JsonField[]>([])
   const [originalFinalDataEn, setOriginalFinalDataEn] = useState<any>(null)
   const [originalQaLocalized, setOriginalQaLocalized] = useState<any>(null)
+
+  const [slideContexts, setSlideContexts] = useState<Record<string, string>>({})
 
   useEffect(() => {
     if (!id) return
@@ -142,6 +151,14 @@ export default function EditStoryPage() {
             console.log('qaLocalized is empty or null')
             setQaLocalizedFields([])
             setOriginalQaLocalized(null)
+          }
+
+          if (data.story.slides) {
+            const initialContexts = data.story.slides.reduce((acc: Record<string, string>, slide: any) => {
+              acc[slide.id] = slide.context || ""
+              return acc
+            }, {})
+            setSlideContexts(initialContexts)
           }
         } else {
           console.error('API returned success: false or no story')
@@ -510,6 +527,33 @@ export default function EditStoryPage() {
     }
   }
 
+  const handleUpdateSlideContext = async (slideId: string) => {
+    const context = slideContexts[slideId]
+    
+    setSaving(true)
+    try {
+      const result = await updateSlide(slideId, { context })
+      if (result) {
+        toast.success(t('storyEdit.slidesTab.saveContextSuccess'))
+        // Update story state to reflect the change
+        setStory(prev => {
+          if (!prev) return null
+          const updatedSlides = prev.slides.map(s => 
+            s.id === slideId ? { ...s, context: result.context } : s
+          )
+          return { ...prev, slides: updatedSlides }
+        })
+      } else {
+        throw new Error('Failed to update slide')
+      }
+    } catch (error) {
+      console.error('Error updating slide context:', error)
+      toast.error(t('storyEdit.slidesTab.saveContextError'))
+    } finally {
+      setSaving(false)
+    }
+  }
+
   const handleSave = async () => {
     if (!story) return
     
@@ -766,25 +810,74 @@ export default function EditStoryPage() {
         </TabsContent>
 
         <TabsContent value="slides" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('storyEdit.sections.slidesInfo.title')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-sm text-muted-foreground space-y-2">
-                <p>{t('storyEdit.sections.slidesInfo.slideCount')} {story.slides?.length || 0}</p>
-                <p>{t('storyEdit.sections.slidesInfo.editSlidesDescription')}</p>
+          <div className="space-y-4">
+            {story.slides && story.slides.length > 0 ? (
+              story.slides.map((slide) => {
+                const originalSlide = story.slides.find(s => s.id === slide.id)
+                const originalContext = originalSlide?.context ?? ''
+                const currentContext = slideContexts[slide.id] ?? ''
+                const hasContextChanged = originalContext !== currentContext
+
+                return (
+                  <Card key={slide.id}>
+                    <CardContent className="p-4 grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                      <div className="md:col-span-1 aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden border">
+                        <SlideViewer slide={slide as any} />
+                      </div>
+                      <div className="md:col-span-2 space-y-3">
+                        <div className="flex justify-between items-start">
+                           <h3 className="font-bold text-lg">{slide.title}</h3>
+                           <Button asChild variant="outline" size="sm">
+                             <Link href={`/editor/${story.id}?slide=${slide.id}`} target="_blank">{t('storyEdit.sections.slidesInfo.editSlides')}</Link>
+                           </Button>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label htmlFor={`context-${slide.id}`}>
+                            {t('storyEdit.slidesTab.contextLabel')}
+                          </Label>
+                          <Textarea
+                            id={`context-${slide.id}`}
+                            value={currentContext}
+                            onChange={(e) =>
+                              setSlideContexts((prev) => ({
+                                ...prev,
+                                [slide.id]: e.target.value,
+                              }))
+                            }
+                            placeholder={t('storyEdit.slidesTab.contextPlaceholder')}
+                            rows={5}
+                            className="text-sm"
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <Button
+                            onClick={() => handleUpdateSlideContext(slide.id)}
+                            disabled={!hasContextChanged || saving}
+                            size="sm"
+                          >
+                            {saving ? t('storyEdit.saving') : t('storyEdit.slidesTab.saveContextButton')}
+                          </Button>
+                          {hasContextChanged && (
+                             <Badge variant="outline" className="text-orange-600 border-orange-600">
+                               {t('storyEdit.hasChanges')}
+                             </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )
+              })
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>{t('storyEdit.slidesTab.noSlides')}</p>
+                 <Button asChild variant="outline" size="sm" className="mt-4">
+                   <Link href={`/editor/${story.id}`}>{t('storyEdit.sections.slidesInfo.editSlides')}</Link>
+                 </Button>
               </div>
-              <div className="mt-4 flex gap-2">
-                <Button asChild variant="outline" size="sm">
-                  <Link href={`/editor/${story.id}`}>{t('storyEdit.sections.slidesInfo.editSlides')}</Link>
-                </Button>
-                <Button asChild size="sm">
-                  <Link href={`/presentation/${story.id}`}>{t('storyEdit.sections.slidesInfo.viewPresentation')}</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+            )}
+          </div>
         </TabsContent>
 
         <TabsContent value="finalDataEn" className="space-y-6">

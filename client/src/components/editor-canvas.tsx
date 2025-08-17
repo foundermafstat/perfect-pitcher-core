@@ -39,11 +39,10 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(true)
   const [isLayersPanelOpen, setIsLayersPanelOpen] = useState(true)
   const [draggedElement, setDraggedElement] = useState<{
-    id: string
-    startX: number
-    startY: number
-    offsetX: number
-    offsetY: number
+    id: string;
+    startX: number;
+    startY: number;
+    originalPositions: { id: string; x: number; y: number }[];
   } | null>(null)
   const [resizingElement, setResizingElement] = useState<{
     id: string
@@ -53,6 +52,7 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
     startY: number
   } | null>(null)
   const [zoom, setZoom] = useState(1)
+  const [scale, setScale] = useState(1)
   const [selectionArea, setSelectionArea] = useState<{
     startX: number
     startY: number
@@ -90,8 +90,8 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
     if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
       const rect = canvasRef.current?.getBoundingClientRect()
       if (rect) {
-        const startX = (e.clientX - rect.left) / zoom
-        const startY = (e.clientY - rect.top) / zoom
+        const startX = (e.clientX - rect.left)
+        const startY = (e.clientY - rect.top)
         setSelectionArea({ startX, startY, endX: startX, endY: startY })
       }
     }
@@ -101,8 +101,8 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
     if (selectionArea) {
       const rect = canvasRef.current?.getBoundingClientRect()
       if (rect) {
-        const endX = (e.clientX - rect.left) / zoom
-        const endY = (e.clientY - rect.top) / zoom
+        const endX = (e.clientX - rect.left)
+        const endY = (e.clientY - rect.top)
         setSelectionArea({ ...selectionArea, endX, endY })
       }
     }
@@ -110,10 +110,18 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
 
   const handleCanvasMouseUp = () => {
     if (selectionArea) {
-      const selectedElements = slide.elements.filter((element) =>
-        isElementInSelectionArea(element, selectionArea)
-      )
-      setSelectedElements(selectedElements)
+      if (scale > 0) {
+        const scaledArea = {
+          startX: selectionArea.startX / scale,
+          startY: selectionArea.startY / scale,
+          endX: selectionArea.endX / scale,
+          endY: selectionArea.endY / scale,
+        };
+        const selected = slide.elements.filter((element) =>
+          isElementInSelectionArea(element, scaledArea)
+        )
+        setSelectedElements(selected)
+      }
       setSelectionArea(null)
     }
   }
@@ -153,35 +161,67 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
         startHeight: element.height,
         startX: e.clientX,
         startY: e.clientY,
-      })
+      });
     } else {
       setDraggedElement({
         id: element.id,
         startX: e.clientX,
         startY: e.clientY,
-        offsetX: e.clientX - element.x,
-        offsetY: e.clientY - element.y,
-      })
+        originalPositions: selectedElements.map(el => ({ id: el.id, x: el.x, y: el.y }))
+      });
     }
   }
 
+  const slideRef = useRef<HTMLDivElement>(null)
+  const zoomContainerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const calculateScale = () => {
+      // We use a timeout to ensure the DOM has updated after a panel is toggled
+      setTimeout(() => {
+        if (zoomContainerRef.current) {
+          const newScale = zoomContainerRef.current.offsetWidth / 1920
+          setScale(newScale)
+        }
+      }, 0)
+    }
+
+    calculateScale()
+
+    const resizeObserver = new ResizeObserver(calculateScale)
+    const currentZoomContainer = zoomContainerRef.current
+    if (currentZoomContainer) {
+      resizeObserver.observe(currentZoomContainer)
+    }
+
+    return () => {
+      if (currentZoomContainer) {
+        resizeObserver.unobserve(currentZoomContainer)
+      }
+    }
+  }, [isSidePanelOpen, isLayersPanelOpen])
+
   const handleMouseMove = (e: MouseEvent) => {
+    if (scale === 0) return // Avoid division by zero if canvas is not rendered
+
     if (draggedElement) {
       const element = slide.elements.find((el) => el.id === draggedElement.id)
       if (!element) return
 
-      const newX = e.clientX - draggedElement.offsetX
-      const newY = e.clientY - draggedElement.offsetY
+      const dx = (e.clientX - draggedElement.startX) / scale
+      const dy = (e.clientY - draggedElement.startY) / scale
 
-      const updatedElements = slide.elements.map((el) =>
-        selectedElements.some((selected) => selected.id === el.id)
-          ? {
-              ...el,
-              x: el.x + (newX - element.x),
-              y: el.y + (newY - element.y),
-            }
-          : el
-      )
+      const updatedElements = slide.elements.map((el) => {
+        const originalPos = draggedElement.originalPositions.find(p => p.id === el.id)
+        if (selectedElements.some((selected) => selected.id === el.id) && originalPos) {
+          return {
+            ...el,
+            x: originalPos.x + dx,
+            y: originalPos.y + dy,
+          }
+        }
+        return el
+      })
 
       onChange({
         ...slide,
@@ -191,8 +231,8 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
       const element = slide.elements.find((el) => el.id === resizingElement.id)
       if (!element) return
 
-      const deltaX = e.clientX - resizingElement.startX
-      const deltaY = e.clientY - resizingElement.startY
+      const deltaX = (e.clientX - resizingElement.startX) / scale
+      const deltaY = (e.clientY - resizingElement.startY) / scale
 
       const newWidth = Math.max(resizingElement.startWidth + deltaX, 20)
       const newHeight = Math.max(resizingElement.startHeight + deltaY, 20)
@@ -483,10 +523,10 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
       {/* Header with section toggle buttons */}
       <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between border-b bg-background/90 px-4 py-1.5">
         <div className="flex gap-2">
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            className="h-7 px-2" 
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 px-2"
             onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
             title={t('editor.canvas.elementsPanel')}
           >
@@ -497,10 +537,10 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
               <ChevronRight className="h-4 w-4" />
             )}
           </Button>
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            className="h-7 px-2" 
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 px-2"
             onClick={() => setIsLayersPanelOpen(!isLayersPanelOpen)}
             title={t('editor.canvas.layersTitle')}
           >
@@ -556,12 +596,12 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
       <div className="flex h-full w-full pt-10">
         {/* Side panel with conditional rendering */}
         {isSidePanelOpen && (
-          <SidePanel 
+          <SidePanel
             slide={slide}
             blueprints={defaultBlueprints}
-            onAddElement={handleAddElement} 
+            onAddElement={handleAddElement}
             onReorderElements={handleReorderElements}
-            onBackgroundChange={handleBackgroundChange} 
+            onBackgroundChange={handleBackgroundChange}
             onBackgroundTypeChange={handleBackgroundTypeChange}
             onSlideUpdate={handleSlideUpdate}
           />
@@ -571,89 +611,105 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
         <div className="relative flex-1 overflow-hidden bg-gray-100">
           <div
             ref={canvasRef}
-            className="flex h-full w-full items-center justify-center p-8"
+            className="flex h-full w-full items-center justify-center"
             onClick={handleCanvasClick}
             onMouseDown={handleCanvasMouseDown}
             onMouseMove={handleCanvasMouseMove}
             onMouseUp={handleCanvasMouseUp}
           >
             <div
-              className="aspect-video h-[600px] origin-center overflow-hidden rounded-lg bg-white shadow-lg"
-              style={{
-                ...getBackgroundStyle(),
-                transform: `scale(${zoom})`,
-              }}
+              ref={zoomContainerRef}
+              className="aspect-video w-full max-w-full max-h-full origin-center flex items-center justify-center"
+              style={{ transform: `scale(${zoom})` }}
             >
-              {slide.backgroundType === "youtube" && youtubeVideoId && (
-                <YoutubeBackground videoId={youtubeVideoId} isActive={true} />
-              )}
+              <div
+                ref={slideRef}
+                className="origin-top-left overflow-hidden rounded-lg bg-white shadow-lg relative"
+                style={{
+                  ...getBackgroundStyle(),
+                  width: '1920px',
+                  height: '1080px',
+                  transform: `scale(${scale})`,
+                }}
+              >
+                {slide.backgroundType === 'youtube' && youtubeVideoId && (
+                  <YoutubeBackground videoId={youtubeVideoId} isActive={true} />
+                )}
 
-              {slide.elements.map((element) => (
-                <div
-                  key={element.id}
-                  className={`absolute cursor-move ${
-                    selectedElements.some((el) => el.id === element.id)
-                      ? "ring-2 ring-blue-500"
-                      : ""
-                  }`}
-                  style={{
-                    left: `${element.x}px`,
-                    top: `${element.y}px`,
-                    width: `${element.width}px`,
-                    height: `${element.height}px`,
-                    zIndex: 10,
-                  }}
-                  onClick={(e) => handleElementClick(element, e)}
-                  onMouseDown={(e) => handleElementMouseDown(element, e)}
-                >
-                  {renderElement(element)}
+                {slide.elements.map((element) => (
+                  <div
+                    key={element.id}
+                    className={`absolute cursor-move ${
+                      selectedElements.some((el) => el.id === element.id)
+                        ? 'ring-2 ring-blue-500'
+                        : ''
+                    }`}
+                    style={{
+                      transform: `translate(${element.x}px, ${element.y}px)`,
+                      width: `${element.width}px`,
+                      height: `${element.height}px`,
+                      zIndex: 10,
+                    }}
+                    onClick={(e) => handleElementClick(element, e)}
+                    onMouseDown={(e) => handleElementMouseDown(element, e)}
+                  >
+                    {renderElement(element)}
 
-                  {selectedElements.some((el) => el.id === element.id) && (
-                    <>
-                      <div className="resize-handle absolute -right-2 -bottom-2 h-4 w-4 cursor-se-resize rounded-full bg-blue-500" />
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="absolute top-1 left-1 h-6 w-6 rounded-md shadow-sm"
-                        onClick={() => {
-                          setSettingsSheetElement(element)
-                          setIsSettingsPanelOpen(true)
-                        }}
-                        title={t('editor.canvas.elementSettings')}
-                      >
-                        <Settings className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        className="absolute top-1 left-8 h-6 w-6 rounded-md shadow-sm"
-                        onClick={() => handleDeleteElement(element.id)}
-                        title={t('editor.canvas.deleteElement')}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </>
-                  )}
-                </div>
-              ))}
+                    {selectedElements.some((el) => el.id === element.id) && (
+                      <>
+                        <div className="resize-handle absolute -right-2 -bottom-2 h-4 w-4 cursor-se-resize rounded-full bg-blue-500" />
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          className="absolute top-1 left-1 h-6 w-6 rounded-md shadow-sm"
+                          onClick={() => {
+                            setSettingsSheetElement(element)
+                            setIsSettingsPanelOpen(true)
+                          }}
+                          title={t('editor.canvas.elementSettings')}
+                        >
+                          <Settings className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-1 left-8 h-6 w-6 rounded-md shadow-sm"
+                          onClick={() => handleDeleteElement(element.id)}
+                          title={t('editor.canvas.deleteElement')}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                ))}
 
-              {selectionArea && (
-                <div
-                  className="absolute border-2 border-blue-500 bg-blue-200 opacity-30"
-                  style={{
-                    left: `${Math.min(selectionArea.startX, selectionArea.endX)}px`,
-                    top: `${Math.min(selectionArea.startY, selectionArea.endY)}px`,
-                    width: `${Math.abs(selectionArea.endX - selectionArea.startX)}px`,
-                    height: `${Math.abs(selectionArea.endY - selectionArea.startY)}px`,
-                  }}
-                />
-              )}
+                {selectionArea && (
+                  <div
+                    className="absolute border-2 border-blue-500 bg-blue-200 opacity-30"
+                    style={{
+                      left: `${Math.min(
+                        selectionArea.startX,
+                        selectionArea.endX
+                      )}px`,
+                      top: `${Math.min(
+                        selectionArea.startY,
+                        selectionArea.endY
+                      )}px`,
+                      width: `${Math.abs(
+                        selectionArea.endX - selectionArea.startX
+                      )}px`,
+                      height: `${Math.abs(
+                        selectionArea.endY - selectionArea.startY
+                      )}px`,
+                    }}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Перенос слоёв в левую панель: снизу больше не показываем */}
 
       <SettingsSheet
         isOpen={isSettingsPanelOpen}

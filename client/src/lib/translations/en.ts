@@ -621,6 +621,15 @@ export const en = {
             saveError: 'Error saving story',
             loadError: 'Error loading story',
             notFound: 'Story not found'
+        },
+
+        slidesTab: {
+            contextLabel: 'Slide Context (for AI)',
+            contextPlaceholder: 'Enter context for this slide...',
+            saveContextButton: 'Save Context',
+            saveContextSuccess: 'Context updated successfully!',
+            saveContextError: 'Failed to save context.',
+            noSlides: 'This story has no slides.'
         }
     },
     

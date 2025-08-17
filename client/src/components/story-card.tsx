@@ -19,22 +19,24 @@ export function StoryCard({ story }: StoryCardProps) {
         {firstSlide ? (
           <div
             className="h-full w-full relative"
-            style={{
-              backgroundColor: firstSlide.background,
-            }}
+            style={
+              firstSlide.backgroundType === "gradient"
+                ? {
+                    background: `linear-gradient(${firstSlide.gradientAngle}deg, ${firstSlide.gradientStart}, ${firstSlide.gradientEnd})`,
+                  }
+                : { backgroundColor: firstSlide.background }
+            }
           >
             {firstSlide.elements.map((element) => (
               <div
                 key={element.id}
                 className="absolute"
                 style={{
-                  left: `${(element.x / 1280) * 100}%`,
-                  top: `${(element.y / 720) * 100}%`,
-                  width: `${(element.width / 1280) * 100}%`,
-                  height: `${(element.height / 720) * 100}%`,
-                  fontSize: `calc(${(element.width / 1280) * 100}% * 0.12)`,
-                  transform: 'scale(1)', // Возвращаю нормальный масштаб
-                  transformOrigin: 'center' // Возвращаю стандартное позиционирование
+                  left: `${(element.x / 1920) * 100}%`,
+                  top: `${(element.y / 1080) * 100}%`,
+                  width: `${(element.width / 1920) * 100}%`,
+                  height: `${(element.height / 1080) * 100}%`,
+                  transform: `rotate(${element.rotate || 0}deg)`,
                 }}
               >
                 {renderElement(element, true)}

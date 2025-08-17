@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { Home } from "lucide-react"
+import { Fullscreen, Home } from "lucide-react"
 import { toast } from "sonner"
 import {
   EffectFade,
@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { SlideViewer } from "@/components/slide-viewer"
 import { getStoryById } from "@/actions/slide"
+import useWebRTCAudioSession from "@/hooks/use-webrtc"
 
 // Import Swiper styles
 import "swiper/css"
@@ -35,6 +36,12 @@ export default function PresentationPage() {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0)
   const [isControlsVisible, setIsControlsVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  const { sendSlideContextUpdate, isSessionActive } = useWebRTCAudioSession(
+    state.selectedVoice,
+    [],
+    state.currentStory
+  )
 
   // Загружаем историю из базы данных
   useEffect(() => {
@@ -62,12 +69,28 @@ export default function PresentationPage() {
   }, [storyId, dispatch, router])
 
   const handleSlideChange = (swiper: any) => {
-    setActiveSlideIndex(swiper.activeIndex)
-    dispatch({ type: "SET_CURRENT_SLIDE_INDEX", payload: swiper.activeIndex })
+    const newIndex = swiper.activeIndex
+    setActiveSlideIndex(newIndex)
+    dispatch({ type: "SET_CURRENT_SLIDE_INDEX", payload: newIndex })
+
+    // If a session is active, send the new slide's context to the agent
+    if (isSessionActive && state.currentStory?.slides[newIndex]?.context) {
+      sendSlideContextUpdate(state.currentStory.slides[newIndex].context!)
+    }
   }
 
   const returnToMainPage = () => {
     router.push("/")
+  }
+
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        toast.error(`Error attempting to enable full-screen mode: ${err.message}`)
+      })
+    } else {
+      document.exitFullscreen()
+    }
   }
 
   if (isLoading || !state.currentStory) {
@@ -83,7 +106,7 @@ export default function PresentationPage() {
       className="bg-background relative h-full w-full overflow-hidden"
       onMouseMove={() => setIsControlsVisible(true)}
       onMouseLeave={() => setIsControlsVisible(false)}
-      style={{ maxHeight: '100%', maxWidth: '100%' }}
+      style={{ maxHeight: "100%", maxWidth: "100%" }}
     >
       <Swiper
         modules={[Navigation, Pagination, Keyboard, EffectFade, Parallax]}
@@ -98,7 +121,10 @@ export default function PresentationPage() {
         className="h-full w-full"
       >
         {state.currentStory.slides.map((slide, index) => (
-          <SwiperSlide key={slide.id} className="bg-transparent">
+          <SwiperSlide
+            key={slide.id}
+            className="bg-transparent flex items-center justify-center"
+          >
             <SlideViewer
               slide={slide}
               useParallax={true}
@@ -118,7 +144,14 @@ export default function PresentationPage() {
           >
             <Home className="h-4 w-4" />
           </Button>
-          <ThemeToggle />
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleFullScreen}
+            className="bg-background/20 hover:bg-background/40 text-foreground"
+          >
+            <Fullscreen className="h-4 w-4" />
+          </Button>
         </div>
       )}
     </div>

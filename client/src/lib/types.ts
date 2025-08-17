@@ -37,6 +37,7 @@ export interface SlideElement {
   y: number
   width: number
   height: number
+  rotate?: number
   content: any
   style: any
   animation?: Animation

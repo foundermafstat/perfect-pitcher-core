@@ -21,7 +21,23 @@ export function SlideViewer({
   isActive = false,
 }: SlideViewerProps) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [scale, setScale] = useState(1)
   const slideRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const calculateScale = () => {
+      if (slideRef.current) {
+        const { offsetWidth, offsetHeight } = slideRef.current
+        const scaleX = offsetWidth / 1920
+        const scaleY = offsetHeight / 1080
+        setScale(Math.min(scaleX, scaleY))
+      }
+    }
+
+    calculateScale()
+    window.addEventListener("resize", calculateScale)
+    return () => window.removeEventListener("resize", calculateScale)
+  }, [])
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -47,9 +63,6 @@ export function SlideViewer({
   }
 
   const getBackgroundStyle = (): React.CSSProperties => {
-    // Проверяем тип фона и возвращаем соответствующий стиль
-    console.log('Тип фона:', slide.backgroundType, 'YouTube:', slide.youtubeBackground, 'Градиент:', slide.gradientStart, slide.gradientEnd);
-    
     if (slide.backgroundType === "gradient" && slide.gradientStart && slide.gradientEnd) {
       return {
         background: `linear-gradient(${slide.gradientAngle || 45}deg, ${slide.gradientStart}, ${slide.gradientEnd})`,
@@ -68,7 +81,6 @@ export function SlideViewer({
       }
     }
 
-    // Тип фона "color" или по умолчанию
     return {
       backgroundColor: slide.background || "#ffffff",
     }
@@ -81,7 +93,7 @@ export function SlideViewer({
   return (
     <div
       ref={slideRef}
-      className="flex h-full w-full items-center justify-center overflow-hidden"
+      className="relative h-full w-full overflow-hidden flex items-center justify-center"
       style={{
         ...getBackgroundStyle(),
         perspective: "1000px",
@@ -94,9 +106,11 @@ export function SlideViewer({
       )}
 
       <div
-        className="relative h-full max-h-[720px] w-full max-w-[1280px] transition-transform duration-200 ease-out"
+        className="absolute transition-transform duration-200 ease-out"
         style={{
-          transform: `rotateY(${mousePosition.x * 5}deg) rotateX(${-mousePosition.y * 5}deg)`,
+          width: `1920px`,
+          height: `1080px`,
+          transform: `scale(${scale}) rotateY(${mousePosition.x * 5}deg) rotateX(${-mousePosition.y * 5}deg)`,
         }}
       >
         {slide.elements.map((element, index) => (
