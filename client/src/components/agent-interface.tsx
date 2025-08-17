@@ -19,7 +19,7 @@ import { useToolsFunctions } from "@/hooks/use-tools"
 import { useTranslations } from "@/providers/translations-context"
 import { ChatMessage } from "@/hooks/use-agent-chat"
 import { StoryContextSelector } from "@/components/story-context-selector"
-import { type Story } from "@/hooks/use-stories"
+import type { Story } from "@/lib/types"
 
 export function AgentInterface(): React.ReactElement {
   const [voice, setVoice] = useState("ash")

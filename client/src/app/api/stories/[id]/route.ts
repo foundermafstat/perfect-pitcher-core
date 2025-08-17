@@ -3,10 +3,10 @@ import { getStoryById, updateStory } from "@/actions/slide"
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params
+    const { id } = params
     const story = await getStoryById(id)
     
     if (!story) {
@@ -28,10 +28,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params
+    const { id } = params
     const body = await request.json()
     const { title, description, deckType, locale, brandColor, thumbnail, finalDataEn, qaLocalized } = body
 

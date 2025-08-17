@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid"
 
 import type { Conversation } from "@/lib/conversations"
 import { useTranslations } from "@/providers/translations-context"
+import type { Story } from "@/lib/types"
 
 export interface Tool {
   name: string
@@ -37,7 +38,7 @@ interface UseWebRTCAudioSessionReturn {
 export default function useWebRTCAudioSession(
   voice: string,
   tools?: Tool[],
-  storyContext?: { title: string; description?: string; slides?: Array<{ title: string; content: string }> } | null
+  storyContext?: Partial<Story> | Record<string, any> | null
 ): UseWebRTCAudioSessionReturn {
   const { t, locale } = useTranslations()
   // Connection/session states
@@ -69,6 +70,8 @@ export default function useWebRTCAudioSession(
   const [currentVolume, setCurrentVolume] = useState(0)
   const analyserRef = useRef<AnalyserNode | null>(null)
   const volumeIntervalRef = useRef<number | null>(null)
+  const contextSentRef = useRef(false)
+  const awaitingContextAckRef = useRef(false)
 
   /**
    * We track only the ephemeral user message **ID** here.
@@ -103,19 +106,34 @@ export default function useWebRTCAudioSession(
   }
 
   /**
+   * Chunk a long string into pieces to avoid oversize messages over the data channel.
+   */
+  function chunkStringBySize(str: string, size = 8000): string[] {
+    const chunks: string[] = []
+    for (let i = 0; i < str.length; i += size) {
+      chunks.push(str.slice(i, i + size))
+    }
+    return chunks
+  }
+
+  /**
    * Configure the data channel on open, sending a session update to the server.
    */
   function configureDataChannel(dataChannel: RTCDataChannel) {
     // Send session update
+    const session: any = {
+      modalities: ["text", "audio"],
+      input_audio_transcription: {
+        model: "whisper-1",
+      },
+    }
+    // Only include tools if provided to avoid wiping server-defined tools
+    if (tools && tools.length) {
+      session.tools = tools
+    }
     const sessionUpdate = {
       type: "session.update",
-      session: {
-        modalities: ["text", "audio"],
-        tools: tools || [],
-        input_audio_transcription: {
-          model: "whisper-1",
-        },
-      },
+      session,
     }
     dataChannel.send(JSON.stringify(sessionUpdate))
 
@@ -138,18 +156,63 @@ export default function useWebRTCAudioSession(
     }
     dataChannel.send(JSON.stringify(languageMessage))
 
-    // Send story context if available
-    if (storyContext) {
-      const contextText = `Контекст презентации:
-Название: ${storyContext.title}
-${storyContext.description ? `Описание: ${storyContext.description}` : ''}
-${storyContext.slides ? `Слайды (${storyContext.slides.length}):
-${storyContext.slides.map((slide, index) => 
-  `${index + 1}. ${slide.title}${slide.content ? `\n   ${slide.content.slice(0, 200)}${slide.content.length > 200 ? '...' : ''}` : ''}`
-).join('\n')}` : ''}
+    // Attempt to send context now; mic will be enabled after context or at the end of onopen()
+    sendContextIfNeeded()
+  }
 
-Используй этот контекст для ответов на вопросы о презентации.`
+  /**
+   * Send full project/story context once when channel is ready.
+   */
+  function sendContextIfNeeded() {
+    const dc = dataChannelRef.current
+    if (!storyContext || contextSentRef.current || !dc || dc.readyState !== "open") return
 
+    // Primer instruction to make the model rely on the following context
+    const primerMessage = {
+      type: "conversation.item.create",
+      item: {
+        type: "message",
+        role: "user",
+        content: [
+          {
+            type: "input_text",
+            text:
+              `SYSTEM_INSTRUCTION: You will receive PROJECT_CONTEXT messages next. ` +
+              `Use them as ground truth for the entire session when answering project-related questions. ` +
+              `The context includes story metadata AND important JSON data with Q&A responses. ` +
+              `Use the JSON data to provide accurate answers about the project. ` +
+              `Prefer responding in the user's current locale: ${locale}. ` +
+              `Do not reveal raw JSON or internal fields. Summarize and cite relevant facts naturally.`,
+          },
+        ],
+      },
+    }
+    dc.send(JSON.stringify(primerMessage))
+
+    // Prepare enhanced context that includes JSON data
+    const storyData = storyContext as any
+    const enhancedContext = {
+      ...storyContext,
+      // Include JSON data for AI agent responses
+      ...(storyData?.finalDataEn && { 
+        agentResponses: storyData.finalDataEn,
+        agentResponsesNote: "These are predefined responses the AI agent should use when answering questions about this project"
+      }),
+      ...(storyData?.qaLocalized && { 
+        localizedQA: storyData.qaLocalized,
+        localizedQANote: "These are localized Q&A pairs for this project in different languages"
+      })
+    }
+
+    // Send complete enhanced context as user messages (no truncation).
+    const header =
+      "PROJECT_CONTEXT\nThis is the complete project/story context including predefined agent responses. Use the JSON data to provide accurate answers. Do not reveal the raw JSON; respond conversationally using the information provided."
+    const contextJSON = JSON.stringify(enhancedContext, null, 2)
+    const fullText = `${header}\n${contextJSON}`
+
+    const chunks = chunkStringBySize(fullText, 8000)
+    chunks.forEach((chunk, idx) => {
+      const prefix = chunks.length > 1 ? `[Part ${idx + 1}/${chunks.length}] ` : ""
       const contextMessage = {
         type: "conversation.item.create",
         item: {
@@ -158,14 +221,52 @@ ${storyContext.slides.map((slide, index) =>
           content: [
             {
               type: "input_text",
-              text: contextText,
+              text: `${prefix}${chunk}`,
             },
           ],
         },
       }
-      dataChannel.send(JSON.stringify(contextMessage))
-      console.log("Story context sent:", storyContext.title)
+      dc.send(JSON.stringify(contextMessage))
+    })
+
+    // Ask the model to confirm it loaded the context
+    const confirmMessage = {
+      type: "conversation.item.create",
+      item: {
+        type: "message",
+        role: "user",
+        content: [
+          {
+            type: "input_text",
+            text: `Please confirm you have loaded the PROJECT_CONTEXT including agent responses. Reply briefly with the project title only: "${storyData?.title || 'Project'}". Answer in locale: ${locale}.`,
+          },
+        ],
+      },
     }
+    dc.send(JSON.stringify(confirmMessage))
+
+    // Wait for model to acknowledge by answering the confirm request
+    awaitingContextAckRef.current = true
+
+    contextSentRef.current = true
+    // Log to DB that context was delivered (first 200 chars)
+    if (sessionIdRef.current) {
+      logEventToDB({
+        sessionId: sessionIdRef.current,
+        type: 'context_sent',
+        role: 'system',
+        text: `${storyData?.title || 'context'}: ${fullText.slice(0, 200)}`,
+        raw: { totalChunks: chunks.length, hasAgentResponses: !!storyData?.finalDataEn, hasLocalizedQA: !!storyData?.qaLocalized },
+      })
+    }
+
+    // Trigger the model to process the newly added context and confirmation request
+    try {
+      const dc = dataChannelRef.current
+      if (dc && dc.readyState === 'open') {
+        dc.send(JSON.stringify({ type: 'response.create' }))
+      }
+    } catch {}
   }
 
   /**
@@ -230,6 +331,8 @@ ${storyContext.slides.map((slide, index) =>
          * User speech started
          */
         case "input_audio_buffer.speech_started": {
+          // Fallback: if for some reason context wasn't sent yet but channel is open, send it now
+          sendContextIfNeeded()
           getOrCreateEphemeralUserId()
           updateEphemeralUserMessage({ status: "speaking" })
           break
@@ -323,6 +426,11 @@ ${storyContext.slides.map((slide, index) =>
             updated[updated.length - 1].isFinal = true
             return updated
           })
+          // If we were waiting for context acknowledgement, enable mic now
+          if (awaitingContextAckRef.current) {
+            enableMicTracks()
+            awaitingContextAckRef.current = false
+          }
           break
         }
 
@@ -484,6 +592,23 @@ ${storyContext.slides.map((slide, index) =>
   }
 
   /**
+   * Control local mic capture enable state
+   */
+  function disableMicTracks() {
+    try {
+      const tracks = audioStreamRef.current?.getAudioTracks() || []
+      tracks.forEach((t) => (t.enabled = false))
+    } catch {}
+  }
+
+  function enableMicTracks() {
+    try {
+      const tracks = audioStreamRef.current?.getAudioTracks() || []
+      tracks.forEach((t) => (t.enabled = true))
+    } catch {}
+  }
+
+  /**
    * Calculate RMS volume from inbound assistant audio
    */
   function getVolume(): number {
@@ -508,6 +633,8 @@ ${storyContext.slides.map((slide, index) =>
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       audioStreamRef.current = stream
       setupAudioVisualization(stream)
+      // Gate mic until context delivered
+      disableMicTracks()
 
       setStatus("Fetching ephemeral token...")
       const ephemeralToken = await getEphemeralToken()
@@ -601,11 +728,19 @@ ${storyContext.slides.map((slide, index) =>
           }
           return prev
         })
+
+        // Ensure context is sent; if no storyContext, enable mic immediately, otherwise wait for ack
+        sendContextIfNeeded()
+        if (!storyContext) {
+          enableMicTracks()
+        }
       }
       dataChannel.onmessage = handleDataChannelMessage
 
-      // Add local (mic) track
-      pc.addTrack(stream.getTracks()[0])
+      // Add local (mic) track but keep it disabled until context is sent
+      const track = stream.getTracks()[0]
+      if (track) track.enabled = false
+      pc.addTrack(track)
 
       // Create offer & set local description
       const offer = await pc.createOffer()
@@ -687,6 +822,10 @@ ${storyContext.slides.map((slide, index) =>
     setConversation([])
     setSessionId(null)
     sessionIdRef.current = null
+
+    // Reset context gating flags so next session will re-send context
+    contextSentRef.current = false
+    awaitingContextAckRef.current = false
   }
 
   /**
@@ -767,6 +906,12 @@ ${storyContext.slides.map((slide, index) =>
     return () => stopSession()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // If story context changes (or is cleared), ensure we re-send it on the next session
+  useEffect(() => {
+    contextSentRef.current = false
+    awaitingContextAckRef.current = false
+  }, [storyContext])
 
   return {
     status,

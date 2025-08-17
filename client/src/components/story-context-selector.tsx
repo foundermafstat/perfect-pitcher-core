@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { BookOpen, Loader2 } from "lucide-react"
-import { useStories, type Story } from '@/hooks/use-stories'
+import { Loader2 } from "lucide-react"
+import { useStories } from '@/hooks/use-stories'
+import type { Story } from '@/lib/types'
 import { useTranslations } from "@/providers/translations-context"
 
 interface StoryContextSelectorProps {
@@ -21,18 +22,39 @@ export function StoryContextSelector({
   const { stories, isLoading, error } = useStories()
   const { t } = useTranslations()
   const [selectedStory, setSelectedStory] = useState<Story | null>(null)
+  const [isFetchingStory, setIsFetchingStory] = useState(false)
 
-  const handleStorySelect = (storyId: string) => {
+  const handleStorySelect = async (storyId: string) => {
     if (storyId === "none") {
       setSelectedStory(null)
       onContextChange(null)
       return
     }
 
-    const story = stories.find(s => s.id === storyId)
-    if (story) {
-      setSelectedStory(story)
-      onContextChange(story)
+    const summary = stories.find(s => s.id === storyId) || null
+    if (summary) setSelectedStory(summary)
+
+    try {
+      setIsFetchingStory(true)
+      const res = await fetch(`/api/stories/${storyId}`, { method: 'GET' })
+      if (res.ok) {
+        const data = await res.json()
+        const full = (data?.story || data) as Story | null
+        if (full) {
+          setSelectedStory(full)
+          onContextChange(full)
+          return
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to fetch full story, falling back to summary', e)
+    } finally {
+      setIsFetchingStory(false)
+    }
+
+    // Fallback to summary
+    if (summary) {
+      onContextChange(summary)
     }
   }
 
@@ -93,6 +115,11 @@ export function StoryContextSelector({
         <div className="text-xs text-muted-foreground">
           {t('agent.selected')}: {selectedStory.title}
           {selectedStory.slides && ` (${selectedStory.slides.length} ${t('agent.slides')})`}
+          {isFetchingStory && (
+            <span className="ml-2 inline-flex items-center gap-1">
+              <Loader2 className="h-3 w-3 animate-spin" /> {t('agent.loading')}
+            </span>
+          )}
         </div>
       )}
     </div>

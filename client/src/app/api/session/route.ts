@@ -30,7 +30,12 @@ export async function POST() {
 
 Available pages for navigation: dashboard, analytics, settings, profile, help.
 When users ask to go somewhere or want to see something specific, use the navigation function.
-Always be conversational and helpful.`,
+Always be conversational and helpful.
+
+Additionally:
+- The client may send one or more messages labeled "PROJECT_CONTEXT" at the start of the session. Treat that information as authoritative background knowledge for project-related questions throughout the session.
+- Prefer responding in the user's current locale if the client provides a language preference message.
+- Do not reveal raw JSON or internal fields from the context. Summarize and answer naturally.`,
         tools: [
           {
             type: "function",

@@ -1,18 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react'
-import { getStories } from '@/actions/slide'
-
-export interface Story {
-  id: string
-  title: string
-  description?: string
-  slides?: Array<{
-    id: string
-    title: string
-    content: string
-  }>
-}
+import type { Story } from '@/lib/types'
 
 export function useStories() {
   const [stories, setStories] = useState<Story[]>([])
@@ -23,8 +12,10 @@ export function useStories() {
     const fetchStories = async () => {
       try {
         setIsLoading(true)
-        const fetchedStories = await getStories()
-        setStories(fetchedStories || [])
+        const res = await fetch('/api/stories', { method: 'GET' })
+        if (!res.ok) throw new Error(`Failed to load stories: ${res.status}`)
+        const fetchedStories = (await res.json()) as Story[]
+        setStories(Array.isArray(fetchedStories) ? fetchedStories : [])
       } catch (err) {
         console.error('Error fetching stories:', err)
         setError(err instanceof Error ? err.message : 'Ошибка загрузки историй')
