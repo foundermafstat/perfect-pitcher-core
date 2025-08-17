@@ -7,7 +7,7 @@ import jsPDF from "jspdf"
 import { createRoot } from "react-dom/client"
 
 import { SlideViewer } from "./slide-viewer"
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Download, FileText, Save, Settings, Trash2 } from "lucide-react"
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Copy, Download, FileText, Save, Settings, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { useStory } from "@/lib/StoryContext"
@@ -290,6 +290,24 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
       elements: updatedElements,
     })
     setSelectedElements((prev) => prev.filter((el) => el.id !== elementId))
+  }
+
+  const handleCopyElement = (element: SlideElement) => {
+    const newElement: SlideElement = {
+      ...element,
+      id: `element-${Date.now()}`,
+      x: element.x + 20, // Offset by 20px to the right
+      y: element.y + 20, // Offset by 20px down
+    }
+
+    onChange({
+      ...slide,
+      elements: [...slide.elements, newElement],
+    })
+
+    // Select the new element
+    setSelectedElements([newElement])
+    toast.success(t('editor.canvas.elementCopied'))
   }
 
   const handleSaveAsPNG = () => {
@@ -658,27 +676,47 @@ export function EditorCanvas({ slide, onChange }: EditorCanvasProps) {
                     {selectedElements.some((el) => el.id === element.id) && (
                       <>
                         <div className="resize-handle absolute -right-2 -bottom-2 h-4 w-4 cursor-se-resize rounded-full bg-blue-500" />
-                        <Button
-                          variant="secondary"
-                          size="icon"
-                          className="absolute top-1 left-1 h-6 w-6 rounded-md shadow-sm"
-                          onClick={() => {
-                            setSettingsSheetElement(element)
-                            setIsSettingsPanelOpen(true)
-                          }}
-                          title={t('editor.canvas.elementSettings')}
-                        >
-                          <Settings className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-1 left-8 h-6 w-6 rounded-md shadow-sm"
-                          onClick={() => handleDeleteElement(element.id)}
-                          title={t('editor.canvas.deleteElement')}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
+                        
+                        {/* Element controls positioned in top-right corner */}
+                        <div className="absolute -top-2 -right-2 flex gap-1">
+                          <Button
+                            variant="secondary"
+                            size="icon"
+                            className="h-6 w-6 rounded-md shadow-sm bg-white border"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleCopyElement(element)
+                            }}
+                            title={t('editor.canvas.copyElement')}
+                          >
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            size="icon"
+                            className="h-6 w-6 rounded-md shadow-sm bg-white border"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setSettingsSheetElement(element)
+                              setIsSettingsPanelOpen(true)
+                            }}
+                            title={t('editor.canvas.elementSettings')}
+                          >
+                            <Settings className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            className="h-6 w-6 rounded-md shadow-sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDeleteElement(element.id)
+                            }}
+                            title={t('editor.canvas.deleteElement')}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
                       </>
                     )}
                   </div>

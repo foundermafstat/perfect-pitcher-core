@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import {
   createSlide,
+  deleteSlide,
+  duplicateSlide,
   getStoryById,
   updateFullSlide,
   updateSlideElements,
@@ -128,6 +130,82 @@ export default function EditorPage() {
       router.push('/editor/new')
     } else {
       toast.error(t('editor.deleteError'))
+    }
+  }
+
+  const handleCopySlide = async (slideIndex: number) => {
+    if (!currentStory || slideIndex < 0 || slideIndex >= currentStory.slides.length) return
+
+    setIsSaving(true)
+    try {
+      const slideId = currentStory.slides[slideIndex].id
+      const duplicatedSlide = await duplicateSlide(slideId)
+      
+      if (duplicatedSlide) {
+        // Update the story with the new slide
+        const updatedStory = {
+          ...currentStory,
+          slides: [...currentStory.slides, duplicatedSlide],
+        }
+
+        dispatch({ type: "SET_CURRENT_STORY", payload: updatedStory })
+        // Select the new duplicated slide
+        dispatch({
+          type: "SET_CURRENT_SLIDE_INDEX",
+          payload: updatedStory.slides.length - 1,
+        })
+        toast.success(t('editor.slideCopied'))
+      } else {
+        toast.error(t('editor.copySlideError'))
+      }
+    } catch (error) {
+      console.error("Ошибка при копировании слайда:", error)
+      toast.error(t('editor.copySlideError'))
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleDeleteSlide = async (slideIndex: number) => {
+    if (!currentStory || slideIndex < 0 || slideIndex >= currentStory.slides.length || currentStory.slides.length <= 1) return
+
+    if (!confirm(t('editor.deleteSlideConfirm'))) return
+
+    setIsSaving(true)
+    try {
+      const slideId = currentStory.slides[slideIndex].id
+      const success = await deleteSlide(slideId)
+      
+      if (success) {
+        // Remove the slide from the story
+        const updatedSlides = currentStory.slides.filter((_, index) => index !== slideIndex)
+        const updatedStory = {
+          ...currentStory,
+          slides: updatedSlides,
+        }
+
+        dispatch({ type: "SET_CURRENT_STORY", payload: updatedStory })
+        
+        // Adjust current slide index if necessary
+        let newIndex = currentSlideIndex
+        if (slideIndex === currentSlideIndex) {
+          // If we deleted the current slide, select the previous one or the first one
+          newIndex = slideIndex > 0 ? slideIndex - 1 : 0
+        } else if (slideIndex < currentSlideIndex) {
+          // If we deleted a slide before the current one, adjust the index
+          newIndex = currentSlideIndex - 1
+        }
+        
+        dispatch({ type: "SET_CURRENT_SLIDE_INDEX", payload: newIndex })
+        toast.success(t('editor.slideDeleted'))
+      } else {
+        toast.error(t('editor.deleteSlideError'))
+      }
+    } catch (error) {
+      console.error("Ошибка при удалении слайда:", error)
+      toast.error(t('editor.deleteSlideError'))
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -289,6 +367,8 @@ export default function EditorPage() {
                   dispatch({ type: "SET_CURRENT_SLIDE_INDEX", payload: index })
                 }
                 onAddSlide={handleAddSlide}
+                onCopySlide={handleCopySlide}
+                onDeleteSlide={handleDeleteSlide}
                 onReorderSlides={async (reordered) => {
                   // Обновляем состояние локально
                   const prevSlideId = currentStory.slides[currentSlideIndex]?.id

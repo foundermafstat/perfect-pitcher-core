@@ -549,6 +549,84 @@ export async function reorderSlides(storyId: string, orderedSlideIds: string[]):
   }
 }
 
+export async function duplicateSlide(slideId: string): Promise<Slide | null> {
+  try {
+    // Get the original slide with all elements
+    const originalSlide = await prisma.slide.findUnique({
+      where: { id: slideId },
+      include: {
+        elements: true
+      }
+    })
+
+    if (!originalSlide) return null
+
+    // Get the story to determine the new slide position
+    const slidesCount = await prisma.slide.count({ 
+      where: { storyId: originalSlide.storyId } 
+    })
+
+    // Create the duplicated slide
+    const duplicatedSlide = await prisma.slide.create({
+      data: {
+        title: `${originalSlide.title} (Copy)`,
+        context: originalSlide.context || '',
+        background: originalSlide.background,
+        backgroundType: originalSlide.backgroundType,
+        youtubeBackground: originalSlide.youtubeBackground || '',
+        gradientStart: originalSlide.gradientStart || '',
+        gradientEnd: originalSlide.gradientEnd || '',
+        gradientAngle: originalSlide.gradientAngle || 45,
+        storyId: originalSlide.storyId,
+        position: slidesCount, // Add at the end
+        elements: {
+          create: originalSlide.elements.map(element => ({
+            type: element.type,
+            x: element.x,
+            y: element.y,
+            width: element.width,
+            height: element.height,
+            content: element.content as any,
+            style: element.style as any || {}
+          }))
+        }
+      },
+      include: {
+        elements: true
+      }
+    })
+
+    return {
+      id: duplicatedSlide.id,
+      title: duplicatedSlide.title,
+      context: duplicatedSlide.context || '',
+      background: duplicatedSlide.background,
+      backgroundType: toBackgroundType(duplicatedSlide.backgroundType as any),
+      youtubeBackground: duplicatedSlide.youtubeBackground || '',
+      gradientStart: duplicatedSlide.gradientStart || '',
+      gradientEnd: duplicatedSlide.gradientEnd || '',
+      gradientAngle: duplicatedSlide.gradientAngle ?? 45,
+      elements: duplicatedSlide.elements.map((element: any) => restoreElementFromDB(element))
+    }
+  } catch (error) {
+    console.error('Ошибка при дублировании слайда:', error)
+    return null
+  }
+}
+
+export async function deleteSlide(slideId: string): Promise<boolean> {
+  try {
+    // Delete the slide and all its elements (cascade delete should handle elements)
+    await prisma.slide.delete({
+      where: { id: slideId }
+    })
+    return true
+  } catch (error) {
+    console.error('Ошибка при удалении слайда:', error)
+    return false
+  }
+}
+
 export async function deleteStory(id: string): Promise<boolean> {
   try {
     await prisma.story.delete({

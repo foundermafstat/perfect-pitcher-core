@@ -18,7 +18,7 @@ import {
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { ChevronDown, ChevronUp, Plus } from "lucide-react"
+import { ChevronDown, ChevronUp, Copy, Plus, Trash2 } from "lucide-react"
 
 import type { Slide } from "@/lib/types"
 import { useTranslations } from "@/providers/translations-context"
@@ -36,6 +36,8 @@ interface StoryTimelineProps {
   currentIndex: number
   onSelectSlide: (index: number) => void
   onAddSlide: () => void
+  onCopySlide?: (slideIndex: number) => void
+  onDeleteSlide?: (slideIndex: number) => void
   onReorderSlides?: (reorderedSlides: Slide[]) => void
 }
 
@@ -90,6 +92,8 @@ export function StoryTimeline({
   currentIndex,
   onSelectSlide,
   onAddSlide,
+  onCopySlide,
+  onDeleteSlide,
   onReorderSlides,
 }: StoryTimelineProps) {
   const { t } = useTranslations()
@@ -139,7 +143,27 @@ export function StoryTimeline({
           {isOpen ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
         </CollapsibleTrigger>
         
-        <div className="p-2">
+        <div className="p-2 flex gap-1">
+          <Button size="sm" variant="ghost" onClick={(e) => {
+            // Prevent the click from triggering the collapsible
+            e.stopPropagation();
+            if (onCopySlide && currentIndex >= 0) {
+              onCopySlide(currentIndex);
+            }
+          }} className="h-6 text-xs" disabled={!onCopySlide || currentIndex < 0}>
+            <Copy className="mr-1 h-3 w-3" />
+            {t('editor.panels.copySlide')}
+          </Button>
+          <Button size="sm" variant="ghost" onClick={(e) => {
+            // Prevent the click from triggering the collapsible
+            e.stopPropagation();
+            if (onDeleteSlide && currentIndex >= 0 && slides.length > 1) {
+              onDeleteSlide(currentIndex);
+            }
+          }} className="h-6 text-xs" disabled={!onDeleteSlide || currentIndex < 0 || slides.length <= 1}>
+            <Trash2 className="mr-1 h-3 w-3" />
+            {t('editor.panels.deleteSlide')}
+          </Button>
           <Button size="sm" variant="ghost" onClick={(e) => {
             // Prevent the click from triggering the collapsible
             e.stopPropagation();
