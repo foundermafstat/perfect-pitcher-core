@@ -17,17 +17,39 @@ export const coreTestnet2: Chain = {
   testnet: true,
 }
 
-export const wagmiConfig = getDefaultConfig({
-  appName: "Perfect Pitcher",
-  projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID || process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "demo",
-  chains: [coreTestnet2, base, polygon, arbitrum, mainnet],
-  transports: {
-    [coreTestnet2.id]: http("https://rpc.test2.btcs.network"),
-    [base.id]: http(),
-    [polygon.id]: http(),
-    [arbitrum.id]: http(),
-    [mainnet.id]: http(),
-  },
-})
+declare global {
+  // Ensure a single wagmi config across HMR reloads
+  // eslint-disable-next-line no-var
+  var __wagmiConfig: ReturnType<typeof getDefaultConfig> | undefined
+}
+
+const wcProjectId = (
+  process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ||
+  process.env.NEXT_PUBLIC_WC_PROJECT_ID ||
+  ""
+) as string
+
+if (!wcProjectId && typeof window !== "undefined") {
+  // Using demo projectId can be flaky; encourage a real ID
+  // eslint-disable-next-line no-console
+  console.warn(
+    "[wallet] NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is missing. Using `demo`; expect limited reliability."
+  )
+}
+
+export const wagmiConfig =
+  globalThis.__wagmiConfig ??=
+    getDefaultConfig({
+      appName: "Perfect Pitcher",
+      projectId: wcProjectId || "demo",
+      chains: [coreTestnet2, base, polygon, arbitrum, mainnet],
+      transports: {
+        [coreTestnet2.id]: http("https://rpc.test2.btcs.network"),
+        [base.id]: http(),
+        [polygon.id]: http(),
+        [arbitrum.id]: http(),
+        [mainnet.id]: http(),
+      },
+    })
 
 

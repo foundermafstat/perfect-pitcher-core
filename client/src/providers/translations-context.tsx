@@ -16,6 +16,7 @@ type TranslationsContextType = {
   locale: string
   setLocale: (locale: string) => void
   airineData: ReturnType<typeof getAIrineData>
+  has: (key: string) => boolean
 }
 
 const TranslationsContext = createContext<TranslationsContextType | null>(null)
@@ -36,8 +37,25 @@ export function TranslationsProvider({ children }: { children: ReactNode }) {
       setLocale(savedLocale);
       setAirineData(getAIrineData(savedLocale));
     }
+    // has() moved outside useEffect
   }, []);
   
+  const has = (key: string): boolean => {
+    const keys = key.split('.')
+    const resolve = (dict: Translations | TranslationValue, path: string[]): string | undefined => {
+      let current: any = dict
+      for (const p of path) {
+        if (current == null || typeof current !== 'object') return undefined
+        current = current[p]
+      }
+      return typeof current === 'string' ? current : undefined
+    }
+    return (
+      resolve(getTranslation(locale), keys) !== undefined ||
+      resolve(getTranslation('en'), keys) !== undefined
+    )
+  }
+
   // Обновляем airineData при изменении локали
   const handleLocaleChange = (newLocale: string) => {
     setLocale(newLocale);
@@ -52,15 +70,30 @@ export function TranslationsProvider({ children }: { children: ReactNode }) {
 
   const t = (key: string, variables?: Record<string, string | number>): string => {
     const keys = key.split('.')
-    let value: TranslationValue = getTranslation(locale)
-    
-    for (const k of keys) {
-      if (value === undefined) return key
-      value = typeof value === 'object' ? value[k] : key
+    const resolve = (dict: Translations | TranslationValue, path: string[]): string | undefined => {
+      let current: any = dict
+      for (const p of path) {
+        if (current == null || typeof current !== 'object') return undefined
+        current = current[p]
+      }
+      return typeof current === 'string' ? current : undefined
     }
 
-    const result = typeof value === 'string' ? value : key
-    
+    // Try current locale first
+    let result = resolve(getTranslation(locale), keys)
+
+    // Fallback to English if missing
+    if (result === undefined) {
+      result = resolve(getTranslation('en'), keys)
+      if (result === undefined) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(`[i18n] Missing translation for key "${key}" in locale "${locale}"`)
+        }
+        // As a last resort, return the last segment of the key to avoid showing full keys in UI
+        result = keys[keys.length - 1]
+      }
+    }
+
     // Если есть переменные для форматирования строки
     if (variables && typeof result === 'string') {
       return formatString(result, variables)
@@ -70,7 +103,7 @@ export function TranslationsProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <TranslationsContext.Provider value={{ t, locale, setLocale: handleLocaleChange, airineData }}>
+    <TranslationsContext.Provider value={{ t, locale, setLocale: handleLocaleChange, airineData, has }}>
       {children}
     </TranslationsContext.Provider>
   )

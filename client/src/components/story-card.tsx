@@ -62,7 +62,7 @@ export function StoryCard({ story }: StoryCardProps) {
       </CardContent>
       <CardFooter className="gap-2 p-4 pt-0">
         <Button asChild variant="outline" size="sm" className="flex-1">
-          <Link href={`/editor/${story.id}`}>
+          <Link href={`/stories/${story.id}/edit`}>
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </Link>

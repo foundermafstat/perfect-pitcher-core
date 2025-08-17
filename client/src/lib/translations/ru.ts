@@ -440,6 +440,180 @@ export const ru = {
         presentation: "Презентация",
         delete: "Удалить"
     },
+    storyEdit: {
+        title: "Редактировать историю",
+        subtitle: "Измените основные параметры истории",
+        hasChanges: "(есть изменения)",
+        cancel: "Отмена",
+        resetChanges: "Сбросить изменения",
+        save: "Сохранить",
+        saving: "Сохранение...",
+        successMessage: "История успешно обновлена",
+        errorMessage: "Ошибка при сохранении истории",
+        tabs: {
+            basic: "Основные данные",
+            slides: "Слайды",
+            finalDataEn: "Данные EN",
+            qaLocalized: "Данные RU"
+        },
+        fields: {
+            title: {
+                label: "Название истории *",
+                placeholder: "Введите название истории",
+                currentValue: "Текущее значение:"
+            },
+            deckType: {
+                label: "Тип презентации",
+                placeholder: "Например: startup, sales, launch, strategy, investor, education, keynote"
+            },
+            description: {
+                label: "Описание *",
+                placeholder: "Опишите вашу историю"
+            },
+            thumbnail: {
+                label: "URL миниатюры",
+                placeholder: "URL изображения для миниатюры",
+                previewAlt: "Предпросмотр миниатюры"
+            },
+            locale: {
+                label: "Язык",
+                placeholder: "Например: ru, en, es"
+            },
+            brandColor: {
+                label: "Цвет бренда",
+                placeholder: "#000000"
+            }
+        },
+        sections: {
+            additionalData: {
+                title: "Дополнительные данные",
+                storyId: "ID истории:",
+                created: "Создано:",
+                updated: "Обновлено:",
+                userId: "ID пользователя:",
+                projectId: "ID проекта:"
+            },
+            slidesInfo: {
+                title: "Информация о слайдах",
+                slideCount: "Количество слайдов:",
+                editSlidesDescription: "Для редактирования содержимого слайдов используйте редактор презентации",
+                editSlides: "Редактировать слайды",
+                viewPresentation: "Просмотреть презентацию"
+            },
+            finalDataEn: {
+                title: "Данные на английском языке (finalDataEn)",
+                description: "Редактируйте каждое поле индивидуально. Изменения будут сохранены в JSON структуре.",
+                noData: "Нет данных для редактирования",
+                noDataSubtext: "finalDataEn пусто или не является объектом"
+            },
+            qaLocalized: {
+                title: "Локализованные данные (qaLocalized)",
+                description: "Редактируйте каждое поле индивидуально. Изменения будут сохранены в JSON структуре.",
+                noData: "Нет данных для редактирования",
+                noDataSubtext: "qaLocalized пусто или не является объектом"
+            }
+        },
+        fieldTypes: {
+            string: "строка",
+            number: "число",
+            boolean: "логический",
+            object: "объект",
+            array: "массив",
+            select: "выбор",
+            multiselect: "множественный выбор",
+            tags: "теги"
+        },
+
+        // Подписи для булевых значений
+        boolean: {
+            true: "Да",
+            false: "Нет"
+        },
+
+        // Плейсхолдеры для общих инпутов
+        inputs: {
+            selectPlaceholder: "Выберите вариант",
+            tagPlaceholder: "Введите и нажмите Enter, чтобы добавить"
+        },
+
+        // Подписи и краткие описания для динамических JSON полей
+        jsonFields: {
+            // Резервные варианты по последнему сегменту ключа
+            keys: {
+                name: { label: 'Название проекта', description: 'Название проекта или продукта.' },
+                oneLiner: { label: 'Одним предложением', description: 'Одно предложение, которое объясняет проект.' },
+                stage: { label: 'Стадия', description: 'Идея, MVP, продукт или масштабирование.' },
+                problem: { label: 'Проблема', description: 'Какую боль вы решаете.' },
+                audience: { label: 'Аудитория', description: 'Целевая аудитория или сегмент.' },
+                urgency: { label: 'Почему сейчас', description: 'Почему это важно именно сейчас.' },
+                solution: { label: 'Решение', description: 'Как продукт решает проблему.' },
+                differentiation: { label: 'Отстройка', description: 'Что делает вас уникальными.' },
+                technologies: { label: 'Технологии', description: 'Ключевые технологии или подходы.' },
+                productOverview: { label: 'Обзор продукта', description: 'Как выглядит и работает (2–3 предложения).' },
+                demoAssets: { label: 'Демо-материалы', description: 'Ссылки на демо, прототип или скриншоты.' },
+                features: { label: 'Ключевые функции', description: 'Список основных функций.' },
+                marketCoverage: { label: 'Покрытие рынка', description: 'Географии и сегменты.' },
+                marketSize: { label: 'Размер рынка', description: 'TAM/SAM/SOM, если есть.' },
+                competitors: { label: 'Конкуренты', description: 'Основные конкуренты или альтернативы.' },
+                monetization: { label: 'Монетизация', description: 'Как вы зарабатываете.' },
+                traction: { label: 'Прогресс', description: 'Достижения и метрики.' },
+                goals: { label: 'Цели', description: 'Цели на ближайшие 6–12 месяцев.' },
+                team: { label: 'Команда', description: 'Основатели и ключевые участники.' },
+                teamExperience: { label: 'Опыт команды', description: 'Опыт и экспертиза.' },
+                funding: { label: 'Финансирование', description: 'Сколько нужно и на что.' },
+                visualAssets: { label: 'Бренд-активы', description: 'Существующие логотипы и медиа.' },
+                visualsNeed: { label: 'Нужны визуалы', description: 'Нужны ли иллюстрации/графика.' },
+                productName: { label: 'Название продукта', description: 'Название продукта.' },
+                pains: { label: 'Боли клиента', description: 'Основные боли клиента.' },
+                solvePains: { label: 'Решение болей', description: 'Как продукт решает боли.' },
+                caseStudies: { label: 'Кейсы', description: 'Примеры и истории успеха.' },
+                roi: { label: 'ROI/выгоды', description: 'Ожидаемые выгоды и окупаемость.' },
+                pricing: { label: 'Цены', description: 'Цена и детали предложения.' },
+                nextSteps: { label: 'Следующие шаги', description: 'Призыв к действию.' },
+                productVersion: { label: 'Версия продукта', description: 'Версия или редакция.' },
+                usp: { label: 'USP', description: 'Уникальные торговые преимущества.' },
+                innovations: { label: 'Инновации', description: 'Ключевые фичи и инновации.' },
+                differencePrev: { label: 'Отличие от прежних', description: 'Чем отличается от прежних решений.' },
+                releaseTimeline: { label: 'Таймлайн релиза', description: 'Сроки доступности.' },
+                companyStatus: { label: 'Статус компании', description: 'Текущий статус компании (сводка).' },
+                periodGoals: { label: 'Цели на период', description: 'Цели на период.' },
+                challenges: { label: 'Вызовы', description: 'Ключевые вызовы.' },
+                strategy: { label: 'Стратегия', description: 'Подход к преодолению вызовов.' },
+                roadmap: { label: 'Дорожная карта', description: 'План и вехи.' },
+                kpis: { label: 'KPI', description: 'Ожидаемые результаты и KPI.' },
+                responsibilities: { label: 'Зоны ответственности', description: 'Роли и ответственность.' },
+                resources: { label: 'Ресурсы', description: 'Требуемые ресурсы.' },
+                companyStage: { label: 'Стадия компании', description: 'Название компании и текущая стадия.' },
+                achievements: { label: 'Достижения', description: 'Достижения с последнего апдейта.' },
+                keyMetrics: { label: 'Ключевые метрики', description: 'Пользователи, выручка, рост.' },
+                productUpdates: { label: 'Обновления продукта', description: 'Релизы и апдейты.' },
+                marketChanges: { label: 'Изменения рынка', description: 'Рыночные изменения, влияющие на компанию.' },
+                teamUpdates: { label: 'Обновления команды', description: 'Изменения в команде.' },
+                fundingStatus: { label: 'Статус финансирования', description: 'Финансы и инвестиции.' },
+                topic: { label: 'Тема', description: 'Предмет или тема.' },
+                knowledgeLevel: { label: 'Уровень знаний', description: 'Уровень знаний аудитории.' },
+                learningObjectives: { label: 'Цели обучения', description: 'Основные цели обучения.' },
+                keyConcepts: { label: 'Ключевые концепции', description: 'Концепции для объяснения.' },
+                contentStructure: { label: 'Структура контента', description: 'Пошаговая структура.' },
+                examples: { label: 'Примеры', description: 'Примеры и кейсы.' },
+                takeaways: { label: 'Выводы', description: 'Итоги и выводы.' },
+                exercises: { label: 'Упражнения', description: 'Упражнения или интерактив.' },
+                talkTitle: { label: 'Название выступления', description: 'Название доклада.' },
+                speaker: { label: 'Спикер', description: 'Имя и регалии.' },
+                bigIdea: { label: 'Главная идея', description: 'Основная идея.' },
+                audienceExpectations: { label: 'Ожидания аудитории', description: 'Что ожидает аудитория.' },
+                keyPoints: { label: 'Ключевые пункты', description: 'Аргументы и ключевые пункты.' },
+                supportingData: { label: 'Поддерживающие данные', description: 'Данные и визуализации.' },
+                conclusionCta: { label: 'Вывод и CTA', description: 'Итог и призыв к действию.' }
+            },
+            // Конкретные вложенные пути (нормализованы с [])
+            paths: {
+                'slides[].title': { label: 'Заголовок слайда', description: 'Название для слайда.' },
+                'slides[].context': { label: 'Контекст слайда', description: 'Текст для озвучивания или контекст.' },
+                'slides[].backgroundType': { label: 'Тип фона', description: 'Тип фона для этого слайда.' }
+            }
+        }
+    },
     storyDetails: {
         created: "Создано",
         updated: "Обновлено",

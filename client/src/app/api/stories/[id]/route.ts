@@ -1,50 +1,65 @@
-import { NextResponse } from "next/server"
-import { prisma } from "@/lib/db"
+import { NextRequest, NextResponse } from "next/server"
+import { getStoryById, updateStory } from "@/actions/slide"
 
-type Params = { params: Promise<{ id: string }> }
-
-export async function GET(_req: Request, { params }: Params) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const { id } = await params
-    const story = await prisma.story.findUnique({
-      where: { id },
-      include: { slides: { include: { elements: true } } },
-    })
-    if (!story) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 })
+    const story = await getStoryById(id)
+    
+    if (!story) {
+      return NextResponse.json(
+        { success: false, error: "Story not found" },
+        { status: 404 }
+      )
+    }
+
     return NextResponse.json({ success: true, story })
   } catch (error) {
-    return NextResponse.json({ success: false, error: String(error) }, { status: 500 })
+    console.error("Error fetching story:", error)
+    return NextResponse.json(
+      { success: false, error: "Internal server error" },
+      { status: 500 }
+    )
   }
 }
 
-export async function DELETE(_req: Request, { params }: Params) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const { id } = await params
-    
-    // Используем транзакцию для атомарного удаления
-    await prisma.$transaction(async (tx) => {
-      // Сначала удаляем все элементы всех слайдов
-      await tx.element.deleteMany({
-        where: {
-          slide: {
-            storyId: id
-          }
-        }
-      })
-      
-      // Затем удаляем все слайды истории
-      await tx.slide.deleteMany({
-        where: { storyId: id }
-      })
-      
-      // И наконец удаляем саму историю
-      await tx.story.delete({ where: { id } })
+    const body = await request.json()
+    const { title, description, deckType, locale, brandColor, thumbnail, finalDataEn, qaLocalized } = body
+
+    const updatedStory = await updateStory(id, {
+      title,
+      description,
+      deckType,
+      locale,
+      brandColor,
+      thumbnail,
+      finalDataEn,
+      qaLocalized
     })
-    
-    return NextResponse.json({ success: true })
+
+    if (!updatedStory) {
+      return NextResponse.json(
+        { success: false, error: "Story not found" },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({ success: true, story: updatedStory })
   } catch (error) {
-    console.error('Error deleting story:', error)
-    return NextResponse.json({ success: false, error: String(error) }, { status: 500 })
+    console.error("Error updating story:", error)
+    return NextResponse.json(
+      { success: false, error: "Internal server error" },
+      { status: 500 }
+    )
   }
 }
 

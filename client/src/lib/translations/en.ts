@@ -431,40 +431,197 @@ export const en = {
         presentation: "Presentation",
         delete: "Delete"
     },
-    storyDetails: {
-        created: "Created",
-        updated: "Updated",
-        type: "Type",
-        language: "Language",
-        back: "Back",
-        slides: "Slides",
-        elements: "Elements",
-        project: "Project",
-        openProject: "Open Project",
-        noProject: "Not linked to project",
-        metadata: "Metadata",
-        noSlides: "No slides"
-    },
-    tools: {
-        availableTools: {
-            getTime: {
-                name: "Time"
+    storyEdit: {
+        title: 'Edit Story',
+        subtitle: 'Modify the main story settings',
+        hasChanges: '(changes pending)',
+        // Legacy button keys preserved
+        saveButton: 'Save Changes',
+        savingButton: 'Saving...',
+        cancelButton: 'Cancel',
+        resetButton: 'Reset Changes',
+        // Keys used by page.tsx
+        save: 'Save',
+        saving: 'Saving...',
+        cancel: 'Cancel',
+        resetChanges: 'Reset Changes',
+        successMessage: 'Story saved successfully!',
+        errorMessage: 'Error saving story',
+        
+        tabs: {
+            basic: 'Basic Data',
+            basicData: 'Basic Data',
+            slides: 'Slides',
+            finalDataEn: 'English Data',
+            qaLocalized: 'Localized Data'
+        },
+        
+        fields: {
+            title: {
+                label: 'Title',
+                placeholder: 'Enter story title',
+                currentValue: 'Current value:'
             },
-            themeSwitcher: {
-                name: "Switch Theme"
+            deckType: {
+                label: 'Presentation type',
+                placeholder: 'e.g.: startup, sales, launch, strategy, investor, education, keynote'
             },
-            partyMode: {
-                name: "Party"
+            description: {
+                label: 'Description',
+                placeholder: 'Enter story description'
             },
-            copyFn: {
-                name: "Copy"
+            thumbnail: {
+                label: 'Thumbnail URL',
+                placeholder: 'Image URL for thumbnail',
+                previewAlt: 'Thumbnail preview'
             },
-            launchWebsite: {
-                name: "Open Website"
+            locale: {
+                label: 'Language',
+                placeholder: 'e.g.: ru, en, es'
             },
-            scrapeWebsite: {
-                name: "Scraper"
+            brandColor: {
+                label: 'Brand Color',
+                placeholder: '#000000'
             }
+        },
+        
+        sections: {
+            additionalData: {
+                title: 'Additional Data',
+                storyId: 'Story ID:',
+                created: 'Created:',
+                updated: 'Updated:',
+                userId: 'User ID:',
+                projectId: 'Project ID:'
+            },
+            slidesInfo: {
+                title: 'Slides Information',
+                slideCount: 'Number of slides:',
+                editSlidesDescription: 'Use the presentation editor to edit slide content',
+                editSlides: 'Edit Slides',
+                viewPresentation: 'View Presentation'
+            },
+            finalDataEn: {
+                title: 'English Data (finalDataEn)',
+                description: 'Edit each field individually. Changes will be saved in JSON structure.',
+                noData: 'No data to edit',
+                noDataSubtext: 'finalDataEn is empty or not an object'
+            },
+            qaLocalized: {
+                title: 'Localized Data (qaLocalized)',
+                description: 'Edit each field individually. Changes will be saved in JSON structure.',
+                noData: 'No data to edit',
+                noDataSubtext: 'qaLocalized is empty or not an object'
+            }
+        },
+        
+        fieldTypes: {
+            string: 'text',
+            number: 'number',
+            boolean: 'boolean',
+            object: 'object',
+            array: 'array',
+            select: 'dropdown',
+            multiselect: 'multi-select',
+            tags: 'tags'
+        },
+        
+        // Inline boolean labels used in UI controls
+        boolean: {
+            true: 'True',
+            false: 'False'
+        },
+        
+        // Generic input placeholders
+        inputs: {
+            selectPlaceholder: 'Select an option',
+            tagPlaceholder: 'Type and press Enter to add'
+        },
+        
+        // Labels and short descriptions for dynamic JSON fields
+        jsonFields: {
+            // Fallbacks by last segment key
+            keys: {
+                name: { label: 'Project name', description: 'Name of the project or product.' },
+                oneLiner: { label: 'One-liner', description: 'A single sentence that explains the project.' },
+                stage: { label: 'Stage', description: 'Idea, MVP, product, or scale.' },
+                problem: { label: 'Problem', description: 'The pain point you solve.' },
+                audience: { label: 'Audience', description: 'Target audience or segment.' },
+                urgency: { label: 'Why now', description: 'Why this is timely.' },
+                solution: { label: 'Solution', description: 'How the product solves the problem.' },
+                differentiation: { label: 'Differentiation', description: 'What makes it unique.' },
+                technologies: { label: 'Technologies', description: 'Key technologies or approaches.' },
+                productOverview: { label: 'Product overview', description: 'How it looks and works (2–3 sentences).' },
+                demoAssets: { label: 'Demo assets', description: 'Links to demo, prototype or screenshots.' },
+                features: { label: 'Key features', description: 'List of main features.' },
+                marketCoverage: { label: 'Market coverage', description: 'Geographies and segments.' },
+                marketSize: { label: 'Market size', description: 'TAM/SAM/SOM if available.' },
+                competitors: { label: 'Competitors', description: 'Main competitors or alternatives.' },
+                monetization: { label: 'Monetization', description: 'How you make money.' },
+                traction: { label: 'Traction', description: 'Progress and metrics.' },
+                goals: { label: 'Goals', description: 'Goals for the next 6–12 months.' },
+                team: { label: 'Team', description: 'Founders and key team.' },
+                teamExperience: { label: 'Team experience', description: 'Background and expertise.' },
+                funding: { label: 'Funding', description: 'How much you need and what for.' },
+                visualAssets: { label: 'Brand assets', description: 'Existing logos and media assets.' },
+                visualsNeed: { label: 'Visual needs', description: 'Whether illustrations/graphics are needed.' },
+                productName: { label: 'Product name', description: 'Name of the product.' },
+                pains: { label: 'Pain points', description: 'Main pains for the client.' },
+                solvePains: { label: 'Pain solution', description: 'How the product solves pains.' },
+                caseStudies: { label: 'Case studies', description: 'Examples and success stories.' },
+                roi: { label: 'ROI/benefits', description: 'Expected ROI and benefits.' },
+                pricing: { label: 'Pricing', description: 'Price and offer details.' },
+                nextSteps: { label: 'Next steps', description: 'Call to action.' },
+                productVersion: { label: 'Product version', description: 'Version or edition.' },
+                usp: { label: 'USP', description: 'Unique selling points.' },
+                innovations: { label: 'Innovations', description: 'Key features and innovations.' },
+                differencePrev: { label: 'Difference vs previous', description: 'How it differs from previous solutions.' },
+                releaseTimeline: { label: 'Release timeline', description: 'Availability and timing.' },
+                companyStatus: { label: 'Company status', description: 'Current company status (summary).' },
+                periodGoals: { label: 'Period goals', description: 'Goals for the period.' },
+                challenges: { label: 'Challenges', description: 'Key challenges.' },
+                strategy: { label: 'Strategy', description: 'Strategy to overcome challenges.' },
+                roadmap: { label: 'Roadmap', description: 'Milestones and plan.' },
+                kpis: { label: 'KPIs', description: 'Expected results and KPIs.' },
+                responsibilities: { label: 'Responsibilities', description: 'Roles and responsibilities.' },
+                resources: { label: 'Resources', description: 'Required resources.' },
+                companyStage: { label: 'Company stage', description: 'Company name and current stage.' },
+                achievements: { label: 'Achievements', description: 'Achievements since last update.' },
+                keyMetrics: { label: 'Key metrics', description: 'Users, revenue, growth.' },
+                productUpdates: { label: 'Product updates', description: 'Releases and updates.' },
+                marketChanges: { label: 'Market changes', description: 'Market shifts affecting the company.' },
+                teamUpdates: { label: 'Team updates', description: 'Changes in the team.' },
+                fundingStatus: { label: 'Funding status', description: 'Financial and funding status.' },
+                topic: { label: 'Topic', description: 'Subject or theme.' },
+                knowledgeLevel: { label: 'Knowledge level', description: 'Audience knowledge level.' },
+                learningObjectives: { label: 'Learning objectives', description: 'Main learning goals.' },
+                keyConcepts: { label: 'Key concepts', description: 'Concepts to explain.' },
+                contentStructure: { label: 'Content structure', description: 'Step-by-step structure.' },
+                examples: { label: 'Examples', description: 'Examples or case studies.' },
+                takeaways: { label: 'Takeaways', description: 'Summary and conclusions.' },
+                exercises: { label: 'Exercises', description: 'Exercises or interactive parts.' },
+                talkTitle: { label: 'Talk title', description: 'Title of the talk.' },
+                speaker: { label: 'Speaker', description: 'Name and credentials.' },
+                bigIdea: { label: 'Big idea', description: 'Main idea.' },
+                audienceExpectations: { label: 'Audience expectations', description: 'What the audience expects.' },
+                keyPoints: { label: 'Key points', description: 'Arguments and key points.' },
+                supportingData: { label: 'Supporting data', description: 'Data and visuals.' },
+                conclusionCta: { label: 'Conclusion & CTA', description: 'Conclusion and call to action.' }
+            },
+            // Specific nested paths (sanitized with [])
+            paths: {
+                'slides[].title': { label: 'Slide title', description: 'Title for the slide.' },
+                'slides[].context': { label: 'Slide context', description: 'Narration or contextual text for the slide.' },
+                'slides[].backgroundType': { label: 'Background type', description: 'Background type for this slide.' }
+            }
+        },
+        
+        messages: {
+            saveSuccess: 'Story saved successfully!',
+            saveError: 'Error saving story',
+            loadError: 'Error loading story',
+            notFound: 'Story not found'
         }
-    }
+    },
+    
 }

@@ -511,7 +511,15 @@ export default function NewStoryPage() {
           >
               {t("newStory.cancel")}
           </Button>
-            {/* Создание запускается автоматически при полной форме */}
+            {/* Кнопка создания истории */}
+            <Button
+              type="submit"
+              onClick={handleSubmit}
+              disabled={!canCreate || isSubmitting}
+              className="bg-primary hover:bg-primary/90"
+            >
+              {isSubmitting ? t("newStory.loading") : t("newStory.create") || "Создать историю"}
+            </Button>
           </div>
         </div>
       </div>

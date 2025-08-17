@@ -30,7 +30,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import { AgentSidebarSlot } from '@/components/agent-sidebar-slot';
 
 
-import { WagmiClientProvider } from "@/providers/wagmi-provider";
+import { WalletProviders } from "@/components/providers/wallet-providers"
 import '@rainbow-me/rainbowkit/styles.css';
 
 // removed unused wrappers that broke JSX nesting
@@ -123,7 +123,7 @@ export default async function RootLayout({
           ...(googleFonts?.map((font) => font.variable) || [])
         )}
       >
-        <WagmiClientProvider>
+        <WalletProviders>
           <ThemeProvider>
             <NextAuthProvider session={session}>
               <ActiveThemeProvider initialTheme={activeThemeValue}>
@@ -154,7 +154,7 @@ export default async function RootLayout({
               </ActiveThemeProvider>
             </NextAuthProvider>
           </ThemeProvider>
-        </WagmiClientProvider>
+        </WalletProviders>
       </body>
     </html>
   )

@@ -168,6 +168,11 @@ export async function getStoryById(id: string): Promise<Story | null> {
       createdAt: story.createdAt.toISOString(),
       updatedAt: story.updatedAt.toISOString(),
       userId: story.userId || undefined,
+      deckType: story.deckType || undefined,
+      locale: story.locale || undefined,
+      brandColor: story.brandColor || undefined,
+      finalDataEn: story.finalDataEn || undefined,
+      qaLocalized: story.qaLocalized || undefined,
       slides: story.slides.map(slide => ({
         id: slide.id,
         title: slide.title,
@@ -276,7 +281,8 @@ export async function updateStory(id: string, storyData: Partial<Omit<Story, 'id
         slides: {
           include: {
             elements: true
-          }
+          },
+          orderBy: { position: 'asc' }
         }
       }
     })
@@ -293,11 +299,17 @@ export async function updateStory(id: string, storyData: Partial<Omit<Story, 'id
       qaLocalized: (updatedStory as any).qaLocalized,
       createdAt: updatedStory.createdAt.toISOString(),
       updatedAt: updatedStory.updatedAt.toISOString(),
+      userId: updatedStory.userId || undefined,
       slides: updatedStory.slides.map(slide => ({
         id: slide.id,
         title: slide.title,
         context: (slide as any).context || '',
         background: slide.background,
+        backgroundType: toBackgroundType((slide as any).backgroundType),
+        youtubeBackground: (slide as any).youtubeBackground || '',
+        gradientStart: (slide as any).gradientStart || '',
+        gradientEnd: (slide as any).gradientEnd || '',
+        gradientAngle: (slide as any).gradientAngle ?? 45,
         elements: slide.elements.map(element => restoreElementFromDB(element))
       }))
     }

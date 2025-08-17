@@ -88,7 +88,7 @@ export default function StoryDetailsPage() {
             <Link href={`/presentation/${story.id}`}>{t('stories.presentation')}</Link>
           </Button>
           <Button asChild variant="secondary">
-            <Link href={`/editor/${story.id}`}>{t('stories.edit')}</Link>
+            <Link href={`/stories/${story.id}/edit`}>{t('stories.edit')}</Link>
           </Button>
         </div>
       </div>
